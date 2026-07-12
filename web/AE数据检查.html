@@ -131,6 +131,19 @@
   </div>
 </div>
 
+<div class="modal" id="gapReportModal" aria-hidden="true">
+  <div class="modal-paper" style="width:min(560px,92vw);max-height:88vh;overflow-y:auto">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <h2>GAP疑误报告<span class="mp-sub">Issue Report</span></h2>
+    <p class="mp-q" id="gapReportSummary"></p>
+    <div id="gapReportBody" style="margin:.5rem 0 .8rem"></div>
+    <div class="mp-actions">
+      <button class="btn-primary" id="gapReportClose">关闭</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" aria-live="polite"></div>
 
 <footer class="colophon">
@@ -141,6 +154,6 @@
 <script src="xlsx.full.min.js"></script>
 <script src="jszip.min.js"></script>
 <script src="y-editor.js"></script>
-<script src="app.js?v=5"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>

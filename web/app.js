@@ -31,7 +31,7 @@ function initLoad(){const dz=$('#dropzone'),fi=$('#fileInput');
   ['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag')}));
   ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));
   dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
-  $('#todayStamp').textContent=new Date().toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'})}
+  $('#todayStamp').textContent='版本时间：2026.07.13'}
 async function handleFile(file){try{const buf=await file.arrayBuffer();S.origBuf=buf.slice(0);toast('正在解析…');const wb=XLSX.read(buf,{type:'array',cellFormula:true,cellNF:true});
   if(!wb.SheetNames.includes('AE Data')){toast('未找到 AE Data 工作表');return}
   S.wb=wb;S.ws=wb.Sheets['AE Data'];S.fileName=file.name;S.srcExt=/\.xlsm?$/i.test(file.name)?'xlsm':(/\.xlsx$/i.test(file.name)?'xlsx':'xls');
@@ -194,7 +194,7 @@ function scanAll(){const ws=S.ws,max=S.maxRow,issues=[];let id=0;
 function getIssueMonth(i){const ws=S.ws;const bv=r2v(ws,'B',i.row);if(bv!=null){const s=String(bv).trim();if(/^\d{2}年\d{2}月$/.test(s))return s}const cv=r2v(ws,'C',i.row);const m=fmtMonthFromDate(cv);return m}
 function getFilteredIssues(){if(!S.filterYear&&!S.filterMonth)return S.issues;return S.issues.filter(i=>{const m=getIssueMonth(i);if(!m)return false;if(S.filterYear&&!m.startsWith(S.filterYear+'年'))return false;if(S.filterMonth&&!m.endsWith(S.filterMonth+'月'))return false;return true})}
 function initDateFilter(){const years=new Set(),months=new Set();S.issues.forEach(i=>{const m=getIssueMonth(i);if(!m)return;const ym=m.match(/^(\d{2})年(\d{2})月$/);if(ym){years.add(ym[1]);months.add(ym[2])}});const ys=$('#filterYear'),ms=$('#filterMonth');ys.innerHTML='<option value="">全部年份</option>';[...years].sort().forEach(y=>ys.innerHTML+='<option value="'+y+'">20'+y+'年</option>');ms.innerHTML='<option value="">全部月份</option>';[...months].sort().forEach(mo=>ms.innerHTML+='<option value="'+mo+'">'+parseInt(mo)+'月</option>');S.filterYear=null;S.filterMonth=null;ys.value='';ms.value=''}
-function showReview(){$('#stage-load').classList.remove('active');$('#stage-review').classList.add('active');renderSynonyms();initDateFilter();renderChart('ws-line');renderTabs();renderIssues();updateCounts();$('#exportBtn').addEventListener('click',openExport);$('#exportCancel').addEventListener('click',closeExport);$('#exportGo').addEventListener('click',doExport);$('#filterApply').addEventListener('click',()=>{S.filterYear=$('#filterYear').value||null;S.filterMonth=$('#filterMonth').value||null;renderTabs();renderIssues();updateCounts()});$('#filterClear').addEventListener('click',()=>{S.filterYear=null;S.filterMonth=null;$('#filterYear').value='';$('#filterMonth').value='';renderTabs();renderIssues();updateCounts()});$$('.ct-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.ct-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart(btn.dataset.dim)}));const gb=$('#gapBtn');if(gb)gb.addEventListener('click',openGAP);const gc=$('#gapCancel');if(gc)gc.addEventListener('click',closeGAP);const gg=$('#gapGo');if(gg)gg.addEventListener('click',generateGAP)}
+function showReview(){$('#stage-load').classList.remove('active');$('#stage-review').classList.add('active');renderSynonyms();initDateFilter();renderChart('ws-line');renderTabs();renderIssues();updateCounts();$('#exportBtn').addEventListener('click',openExport);$('#exportCancel').addEventListener('click',closeExport);$('#exportGo').addEventListener('click',doExport);$('#filterApply').addEventListener('click',()=>{S.filterYear=$('#filterYear').value||null;S.filterMonth=$('#filterMonth').value||null;renderTabs();renderIssues();updateCounts()});$('#filterClear').addEventListener('click',()=>{S.filterYear=null;S.filterMonth=null;$('#filterYear').value='';$('#filterMonth').value='';renderTabs();renderIssues();updateCounts()});$$('.ct-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.ct-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart(btn.dataset.dim)}));const gb=$('#gapBtn');if(gb)gb.addEventListener('click',openGAP);const gc=$('#gapCancel');if(gc)gc.addEventListener('click',closeGAP);const gg=$('#gapGo');if(gg)gg.addEventListener('click',generateGAP);const grc=$('#gapReportClose');if(grc)grc.addEventListener('click',()=>{$('#gapReportModal').classList.remove('open');$('#gapReportModal').setAttribute('aria-hidden','true')})}
 function renderSynonyms(){const grid=$('#synGrid');grid.innerHTML='';const block=(t,syn)=>{const c=document.createElement('div');c.className='syn-card';c.innerHTML='<div class="sc-head">'+t+'</div>';Object.keys(syn).forEach(from=>{const r=document.createElement('div');r.className='syn-row';r.innerHTML='<span>'+from+'</span><span class="arr">→</span>';const i=document.createElement('input');i.value=syn[from];i.addEventListener('change',()=>{syn[from]=i.value});r.appendChild(i);c.appendChild(r)});grid.appendChild(c)};block('STATUS',SYNONYMS.status);block('SHIFT',SYNONYMS.shift)}
 function renderChart(dim){const area=$('#chartArea');if(!area)return;const ws=S.ws;
   let groups=[];
@@ -325,7 +325,7 @@ async function doExport(){closeExport()
   await exportPatchedFile();
   exportCSV();
   toast('已导出修正文件及报告 CSV')}
-function download(blob,name){const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},500)}
+function download(blob,name){const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},2000)}
 function exportCSV(bookName){const rows=[['编号','行','列字母','列名','类型','问题描述','原值','订后值','处理方式']];const colMap={};COLS.forEach(c=>colMap[c.L]=c)
   S.issues.forEach(i=>rows.push([i.id,i.row,i.col,colMap[i.col]?colMap[i.col].cn:'',i.type,i.reason,esc(i.current),esc(i.value),i.resolved||'待批']))
   const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c==null?'':c);if(/[",\n]/.test(s))return'"'+s.replace(/"/g,'""')+'"';return s}).join(',')).join('\r\n')
@@ -337,12 +337,15 @@ function openGAP(){
   if(!S.wb.SheetNames.includes('Asset')){toast('未找到 Asset 工作表');return}
   const assetWs=S.wb.Sheets['Asset'];
   const assetRows=XLSX.utils.sheet_to_json(assetWs,{header:1,raw:1});
-  /* 默认上月第一天和最后一天 */
-  const now=new Date();const lastMonthEnd=new Date(now.getFullYear(),now.getMonth(),0);
-  const lastMonthStart=new Date(now.getFullYear(),now.getMonth()-1,1);
+  /* 默认上月第一天和最后一天（或记忆上次选择） */
   const fmtLocal=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-  $('#gapStartDate').value=fmtLocal(lastMonthStart);
-  $('#gapEndDate').value=fmtLocal(lastMonthEnd);
+  if(!S.gapDateCache){
+    const now=new Date();const lastMonthEnd=new Date(now.getFullYear(),now.getMonth(),0);
+    const lastMonthStart=new Date(now.getFullYear(),now.getMonth()-1,1);
+    S.gapDateCache={start:fmtLocal(lastMonthStart),end:fmtLocal(lastMonthEnd)}
+  }
+  $('#gapStartDate').value=S.gapDateCache.start;
+  $('#gapEndDate').value=S.gapDateCache.end;
   /* 统计 AE Data 中每个 车间+资产 有多少条数据 */
   const ws=S.ws,max=S.maxRow;
   const dataCount=new Set();
@@ -354,10 +357,11 @@ function openGAP(){
   const byWs={};
   for(let i=1;i<assetRows.length;i++){
     const r=assetRows[i];if(!r[0]&&!r[1])continue;
-    const workshop=String(r[0]||'').trim(),asset=String(r[1]||'').trim();
+    const workshop=String(r[0]||'').trim(),asset=String(r[1]||'').trim(),filename=String(r[2]||'').trim();
+    if(!filename)continue;
     if(!dataCount.has(workshop+'\x00'+asset))continue;
     if(!byWs[workshop])byWs[workshop]=[];
-    byWs[workshop].push({idx:i,name:asset,filename:String(r[2]||'')})
+    byWs[workshop].push({idx:i,name:asset,filename})
   }
   const list=$('#gapAssetList');list.innerHTML='';
   Object.keys(byWs).sort().forEach(wsName=>{
@@ -398,13 +402,16 @@ function lookupProduct(map,name,colIdx){
 async function generateGAP(){
   const checked=$$('#gapAssetList input:checked').map(cb=>parseInt(cb.value));
   if(!checked.length){toast('请至少选择一个资产');return}
-  closeGAP();toast('正在准备模板数据…');
+  closeGAP();
+  if(!S.origBuf){toast('无原始文件数据');return}
+  toast('正在准备模板数据…');
   try{
     const assetWs=S.wb.Sheets['Asset'];
     const assetRows=XLSX.utils.sheet_to_json(assetWs,{header:1,raw:1});
     const sdVal=$('#gapStartDate').value,edVal=$('#gapEndDate').value;
     if(!sdVal||!edVal){toast('请设置日期范围');return}
     const startDate=new Date(sdVal+'T00:00:00'),endDate=new Date(edVal+'T00:00:00');
+  S.gapDateCache={start:sdVal,end:edVal};
     const startSerial=toExcelSerial(startDate),endSerial=toExcelSerial(endDate);
     /* Product lookup */
     const prodMap={};
@@ -445,6 +452,7 @@ async function generateGAP(){
     const timeStamp=formatTimeStamp(new Date());
     let count=0;
     /* setXmlCell: replace cell value in sheet XML while preserving style (s attribute) */
+    function escXml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
     function setXmlCell(xml,addr,val,isNum){
       const re=new RegExp('<c r="'+addr+'"([^>]*)/>|<c r="'+addr+'"([^>]*)>.*?</c>','g');
       const m=re.exec(xml);
@@ -458,12 +466,40 @@ async function generateGAP(){
       }else if(isNum){
         rep='<c r="'+addr+'"'+sAttr+'><v>'+val+'</v></c>';
       }else{
-        const esc=String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-        rep='<c r="'+addr+'"'+sAttr+' t="inlineStr"><is><t>'+esc+'</t></is></c>';
+        rep='<c r="'+addr+'"'+sAttr+' t="inlineStr"><is><t>'+escXml(val)+'</t></is></c>';
       }
       return xml.substring(0,m.index)+rep+xml.substring(m.index+m[0].length);
     }
-    function escXml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+    function prepareSheetXml(xml,firstDataRow,neededRows){
+      const sdMatch=xml.match(/<sheetData>([\s\S]*?)<\/sheetData>/);
+      if(!sdMatch)return xml;
+      const rowRe=/<row\b[^>]*>[\s\S]*?<\/row>|<row\b[^>]*\/>/g;
+      const rows=sdMatch[1].match(rowRe)||[];
+      let headerRows=[],templateRow=null;
+      for(const row of rows){
+        const rM=row.match(/r="(\d+)"/);const r=rM?parseInt(rM[1]):0;
+        if(r<firstDataRow)headerRows.push(row);
+        else if(r===firstDataRow)templateRow=row;
+      }
+      if(!templateRow)return xml;
+      const dataRows=[];
+      for(let i=0;i<neededRows;i++){
+        const tr=firstDataRow+i;
+        let cloned=templateRow.replace(/r="\d+"/,'r="'+tr+'"');
+        cloned=cloned.replace(/r="([A-Z]+)\d+"/g,(m,col)=>'r="'+col+tr+'"');
+        cloned=cloned.replace(/<c r="([^"]*)"([^>]*)>[\s\S]*?<\/c>/g,(m,addr,attrs)=>{
+          const sM=attrs.match(/s="(\d+)"/);return'<c r="'+addr+'"'+(sM?' s="'+sM[1]+'"':'')+'/>';
+        });
+        cloned=cloned.replace(/<c r="([^"]*)"([^>]*)\/>/g,(m,addr,attrs)=>{
+          const sM=attrs.match(/s="(\d+)"/);return'<c r="'+addr+'"'+(sM?' s="'+sM[1]+'"':'')+'/>';
+        });
+        dataRows.push(cloned);
+      }
+      const lastRow=Math.max(firstDataRow+neededRows-1,firstDataRow);
+      let result=xml.replace(/<sheetData>[\s\S]*?<\/sheetData>/,'<sheetData>'+headerRows.join('')+dataRows.join('')+'</sheetData>');
+      result=result.replace(/<dimension ref="([A-Z]+)\d+:([A-Z]+)\d+"/,(m,c1,c2)=>'<dimension ref="'+c1+'1:'+c2+lastRow+'"');
+      return result;
+    }
     /* Pre-read template sheet XMLs that need modification or relocation */
     toast('正在加载模板XML…');
     const tplZip=await JSZip.loadAsync(S.origBuf);
@@ -484,7 +520,8 @@ async function generateGAP(){
       if(!filename)continue;
       const batchName=String(ar[4]||'').replace(/_/g,' '),sheetName=String(ar[5]||'Production');
       /* Modify Production sheet XML */
-      let prodXml=tplSheet5;
+      const numDays=Math.round((endDate-startDate)/86400000)+1;
+      let prodXml=prepareSheetXml(tplSheet5,7,numDays);
       prodXml=setXmlCell(prodXml,'B3',filename,false);
       prodXml=setXmlCell(prodXml,'B4',config,false);
       let prodRow=7;
@@ -514,9 +551,8 @@ async function generateGAP(){
         prodData.push({row:prodRow,startDT,endDT,prodName});
         prodRow++
       }
-      /* Modify Loss Details sheet XML */
-      let lossXml=tplSheet6;
-      let lossRow=2;
+      /* Collect loss entries first to know row count */
+      const lossEntries=[];
       const lossByProdRow={};
       for(const ae of aeData){
         if(ae.workshop!==workshop||ae.asset!==asset)continue;
@@ -525,41 +561,51 @@ async function generateGAP(){
         if(ae.startSerial<startSerial+8/24||ae.endSerial>endSerial+1+8/24)continue;
         let prodR=0;
         for(const pd of prodData){if(ae.startSerial>=pd.startDT-1/86400&&ae.startSerial<pd.endDT){prodR=pd.row;break}}
-        lossXml=setXmlCell(lossXml,'A'+lossRow,prodR,true);
-        lossXml=setXmlCell(lossXml,'B'+lossRow,'ATL',false);
-        if(ae.individual){
-          const cat=catMap[String(ae.individual).trim()];
-          if(cat){
-            lossXml=setXmlCell(lossXml,'C'+lossRow,cat.main||'',false);
-            lossXml=setXmlCell(lossXml,'D'+lossRow,cat.sub||'',false);
-            lossXml=setXmlCell(lossXml,'E'+lossRow,ae.individual,false);
-            lossXml=setXmlCell(lossXml,'F'+lossRow,ae.individual,false)
-          }
-        }else if(ae.bo===ae.lossTime){
-          lossXml=setXmlCell(lossXml,'C'+lossRow,'BO',false);
-          lossXml=setXmlCell(lossXml,'D'+lossRow,'No dem',false);
-          lossXml=setXmlCell(lossXml,'E'+lossRow,boLookup,false);
-          lossXml=setXmlCell(lossXml,'F'+lossRow,boLookup,false)
-        }
-        lossXml=setXmlCell(lossXml,'G'+lossRow,ae.startSerial,true);
-        lossXml=setXmlCell(lossXml,'H'+lossRow,ae.endSerial,true);
-        lossXml=setXmlCell(lossXml,'I'+lossRow,ae.lossTime/24,true);
-        lossXml=setXmlCell(lossXml,'M'+lossRow,ae.reason||'',false);
+        lossEntries.push({prodR,ae});
         lossByProdRow[prodR]=true;
-        lossRow++
       }
       for(const pd of prodData){
         if(pd.prodName!=='NOP')continue;
         if(lossByProdRow[pd.row])continue;
-        lossXml=setXmlCell(lossXml,'A'+lossRow,pd.row,true);
-        lossXml=setXmlCell(lossXml,'B'+lossRow,'ATL',false);
-        lossXml=setXmlCell(lossXml,'C'+lossRow,'BO',false);
-        lossXml=setXmlCell(lossXml,'D'+lossRow,'No dem',false);
-        lossXml=setXmlCell(lossXml,'E'+lossRow,boLookup,false);
-        lossXml=setXmlCell(lossXml,'F'+lossRow,boLookup,false);
-        lossXml=setXmlCell(lossXml,'G'+lossRow,pd.startDT,true);
-        lossXml=setXmlCell(lossXml,'H'+lossRow,pd.endDT,true);
-        lossXml=setXmlCell(lossXml,'I'+lossRow,(pd.endDT-pd.startDT),true);
+        lossEntries.push({prodR:pd.row,nop:true,pd});
+      }
+      /* Modify Loss Details sheet XML */
+      let lossXml=prepareSheetXml(tplSheet6,2,Math.max(lossEntries.length,1));
+      let lossRow=2;
+      for(const entry of lossEntries){
+        if(entry.nop){
+          lossXml=setXmlCell(lossXml,'A'+lossRow,entry.prodR,true);
+          lossXml=setXmlCell(lossXml,'B'+lossRow,'ATL',false);
+          lossXml=setXmlCell(lossXml,'C'+lossRow,'BO',false);
+          lossXml=setXmlCell(lossXml,'D'+lossRow,'No dem',false);
+          lossXml=setXmlCell(lossXml,'E'+lossRow,boLookup,false);
+          lossXml=setXmlCell(lossXml,'F'+lossRow,boLookup,false);
+          lossXml=setXmlCell(lossXml,'G'+lossRow,entry.pd.startDT,true);
+          lossXml=setXmlCell(lossXml,'H'+lossRow,entry.pd.endDT,true);
+          lossXml=setXmlCell(lossXml,'I'+lossRow,(entry.pd.endDT-entry.pd.startDT),true);
+        }else{
+          const ae=entry.ae;
+          lossXml=setXmlCell(lossXml,'A'+lossRow,entry.prodR,true);
+          lossXml=setXmlCell(lossXml,'B'+lossRow,'ATL',false);
+          if(ae.individual){
+            const cat=catMap[String(ae.individual).trim()];
+            if(cat){
+              lossXml=setXmlCell(lossXml,'C'+lossRow,cat.main||'',false);
+              lossXml=setXmlCell(lossXml,'D'+lossRow,cat.sub||'',false);
+            }
+            lossXml=setXmlCell(lossXml,'E'+lossRow,ae.individual,false);
+            lossXml=setXmlCell(lossXml,'F'+lossRow,ae.individual,false)
+          }else if(ae.bo===ae.lossTime){
+            lossXml=setXmlCell(lossXml,'C'+lossRow,'BO',false);
+            lossXml=setXmlCell(lossXml,'D'+lossRow,'No dem',false);
+            lossXml=setXmlCell(lossXml,'E'+lossRow,boLookup,false);
+            lossXml=setXmlCell(lossXml,'F'+lossRow,boLookup,false)
+          }
+          lossXml=setXmlCell(lossXml,'G'+lossRow,ae.startSerial,true);
+          lossXml=setXmlCell(lossXml,'H'+lossRow,ae.endSerial,true);
+          lossXml=setXmlCell(lossXml,'I'+lossRow,ae.lossTime/24,true);
+          lossXml=setXmlCell(lossXml,'M'+lossRow,ae.reason||'',false);
+        }
         lossRow++
       }
       /* Build new xlsx zip from scratch with only needed files */
@@ -629,7 +675,45 @@ async function generateGAP(){
     toast('正在打包ZIP文件…');
     const dlBlob=await dlZip.generateAsync({type:'blob',mimeType:'application/zip'});
     download(dlBlob,'GAP_'+timeStamp+'.zip');
-    toast('已生成 '+count+' 个GAP文件，已打包为ZIP下载')
+    /* 统计影响GAP文件内容的疑误 */
+    const gapCols=new Set(['A','C','H','I','K','N','O','P','Q','X','AA']);
+    const colNames={'A':'车间','C':'日期','H':'产品','I':'资产','K':'实际产量','N':'开始时间','O':'结束时间','P':'损失时间','Q':'原因','X':'BO','AA':'AE分类'};
+    const selectedAssets=new Set();
+    for(const assetIdx of checked){const ar=assetRows[assetIdx];if(!ar)continue;selectedAssets.add(String(ar[0]||'').trim()+'\x00'+String(ar[1]||'').trim())}
+    const gapIssues=[];
+    for(const i of S.issues){
+      if(!gapCols.has(i.col))continue;
+      const ws=getMergedVal(S.ws,'A',i.row),as=getMergedVal(S.ws,'I',i.row);
+      if(!selectedAssets.has(String(ws||'').trim()+'\x00'+String(as||'').trim()))continue;
+      const dv=r2v(S.ws,'C',i.row);
+      let dSer=null;if(typeof dv==='number')dSer=dv;else if(dv instanceof Date)dSer=toExcelSerial(dv);
+      if(dSer==null||dSer<startSerial-0.5||dSer>endSerial+0.5)continue;
+      gapIssues.push(i)
+    }
+    /* 按列+类型分组统计 */
+    const groups={};
+    for(const i of gapIssues){
+      const key=i.col+'\x00'+i.type;
+      if(!groups[key])groups[key]={col:i.col,type:i.type,reason:i.reason,count:0};
+      groups[key].count++
+    }
+    const sortedKeys=Object.keys(groups).sort((a,b)=>{
+      const ca=groups[a].col,cb=groups[b].col;
+      if(ca!==cb)return COLS.findIndex(c=>c.L===ca)-COLS.findIndex(c=>c.L===cb);
+      return groups[b].count-groups[a].count
+    });
+    let reportHtml='<table style="width:100%;border-collapse:collapse;font-size:.9rem">';
+    reportHtml+='<thead><tr style="border-bottom:2px solid var(--ink)"><th style="text-align:left;padding:.3rem .4rem">列</th><th style="text-align:left;padding:.3rem .4rem">类型</th><th style="text-align:left;padding:.3rem .4rem">说明</th><th style="text-align:right;padding:.3rem .4rem">数量</th></tr></thead><tbody>';
+    for(const key of sortedKeys){
+      const g=groups[key];
+      reportHtml+='<tr style="border-bottom:1px dashed var(--rule-soft)"><td style="padding:.3rem .4rem">'+g.col+' '+colNames[g.col]+'</td><td style="padding:.3rem .4rem">'+g.type+'</td><td style="padding:.3rem .4rem;color:var(--ink-soft)">'+g.reason+'</td><td style="text-align:right;padding:.3rem .4rem;font-weight:700;color:var(--vermillion)">'+g.count+'</td></tr>'
+    }
+    reportHtml+='</tbody></table>';
+    $('#gapReportSummary').textContent='共 '+gapIssues.length+' 处疑误影响 '+count+' 个GAP文件的内容：';
+    $('#gapReportBody').innerHTML=reportHtml;
+    $('#gapReportModal').classList.add('open');
+    $('#gapReportModal').setAttribute('aria-hidden','false');
+    toast('已生成 '+count+' 个GAP文件，已打包ZIP下载')
   }catch(err){console.error('generateGAP error:',err);toast('生成失败：'+err.message)}
 }
 function formatTimeStamp(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())}
