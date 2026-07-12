@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AE数据检查</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;700;900&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="paper-edge" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="mast-left">
+    <span class="vol date-stamp" id="todayStamp">　</span>
+  </div>
+  <h1 class="title">
+    <span class="title-main">AE&nbsp;数&nbsp;据&nbsp;检&nbsp;查</span>
+    <span class="title-sub">AE Data&nbsp;Check</span>
+  </h1>
+  <div class="mast-right"></div>
+  <div class="rule-thick"></div>
+  <div class="rule-thin"></div>
+</header>
+
+<p class="epigraph">
+  将 Excel 工作簿拖入下方，工具会在浏览器里本地解析并按列逐条列出可疑数据，由你决定每一条是采纳建议、手动填写新值，还是忽略不改。处理完毕后导出修正后的新工作簿，原始公式均完整保留。
+  <span class="cite">— AE数据检查工具</span>
+</p>
+
+<section id="stage-load" class="stage active">
+  <div class="load-wrap">
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="拖入或选择 Excel 文件">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <p class="dz-big">将 <code>资产数据(GAP).xlsx</code> 拖至此处</p>
+      <p class="dz-sub">— 或 —</p>
+      <button class="btn-file" id="pickBtn">选取文件 / Select File</button>
+      <input type="file" id="fileInput" accept=".xlsx,.xlsm" hidden>
+      <p class="dz-foot">本地处理 · 文件不离开本机 · SheetJS 解析</p>
+    </div>
+    <aside class="load-note">
+      <h3>使用说明</h3>
+      <ol>
+        <li>读取 <b>AE Data</b> 主表，以 <b>Asset</b>（设备）、<b>Product</b>（产品）、<b>Category</b>（分类）三表为字典。公式列仅读取不修改。</li>
+        <li>每处问题按列归类列出（含行号、当前值、建议值）。例如：空格/全角空格被清理，<code>"日班"</code>→<code>"白班"</code>，日期序列号→<code>"X月"</code>，产品大小写按字典修正。</li>
+        <li>判定原则：<u>只判值，不替你揣度合理性</u>——如停机行产量为空可能正常，仅标出供你决定。班次时长规则：两班制（白/夜）每班 12h、三班制（含中班）每班 8h，以此核对 OAE 公式常数。</li>
+        <li>每条可 <b>接受</b>、<b>手动修改</b>、<b>忽略</b>。同类型问题可在分组卡片上批量处理。</li>
+        <li>导出默认生成 <code>源文件名-Check.xlsx</code> 下载到浏览器目录；也可沿用源文件名下载或仅导 CSV 日志。导出的工作簿保留所有原有 Excel 公式。</li>
+      </ol>
+    </aside>
+  </div>
+</section>
+
+<section id="stage-review" class="stage">
+  <div class="ledger-bar">
+    <div class="lb-item"><span class="lb-num" id="cntDataRows">0</span><span class="lb-lbl">数据行数</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num" id="cntTotal">0</span><span class="lb-lbl">疑误总数</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num acc" id="cntAccept">0</span><span class="lb-lbl">自动修正</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num man" id="cntManual">0</span><span class="lb-lbl">手动修改</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num ign" id="cntIgnore">0</span><span class="lb-lbl">已经忽略</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num pen" id="cntPending">0</span><span class="lb-lbl">待审批</span></div>
+    <div class="lb-spacer"></div>
+    <button class="btn-export" id="exportBtn" disabled>导出下载</button>
+  </div>
+
+  <details class="syn-set" id="synSet">
+    <summary>同义词表 · 预填建议（点击展开修订）<span class="syn-hint">用于"接受"的默认映射</span></summary>
+    <div class="syn-grid" id="synGrid"></div>
+  </details>
+
+  <details class="chart-set" id="chartSet">
+    <summary>疑误分布图表<span class="syn-hint">按维度统计疑误数量</span></summary>
+    <div class="chart-toolbar">
+      <button class="ct-btn active" data-dim="ws-line">车间 / 产线</button>
+      <button class="ct-btn" data-dim="yr-mon">年 / 月</button>
+    </div>
+    <div class="chart-area" id="chartArea"></div>
+  </details>
+
+  <div class="date-filter" id="dateFilter">
+    <span class="df-label">时间筛选</span>
+    <select id="filterYear" class="df-select"><option value="">全部年份</option></select>
+    <select id="filterMonth" class="df-select"><option value="">全部月份</option></select>
+    <button class="df-apply" id="filterApply">筛选</button>
+    <button class="df-clear" id="filterClear">取消筛选</button>
+  </div>
+
+  <div class="columns-tabs" id="colTabs"></div>
+  <div class="issues-stream" id="issuesStream"></div>
+</section>
+
+<div class="modal" id="exportModal" aria-hidden="true">
+  <div class="modal-paper">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <h2>导出下载<span class="mp-sub">Export</span></h2>
+    <p class="mp-q">选择下载保存的方式：</p>
+    <label class="mp-opt"><input type="radio" name="save" value="direct" checked> <span><b>直接导出修正文件</b> — 基于原始文件修补，完整保留公式/格式/宏，后缀与源文件一致</span></label>
+    <label class="mp-opt"><input type="radio" name="save" value="ops"> <span><b>生成操作清单 + 报告</b> — 下载 操作清单.csv（用于 apply_fix.py）+ 疑误报告.csv</span></label>
+    <label class="mp-opt"><input type="radio" name="save" value="report"> <span><b>仅出报告</b> — 只导 CSV 批注日志</span></label>
+    <p class="mp-note">💡 推荐使用「直接导出修正文件」，无需 apply_fix.py，浏览器直接生成可用的 Excel 文件。</p>
+    <div class="mp-actions">
+      <button class="btn-ghost" id="exportCancel">返回</button>
+      <button class="btn-primary" id="exportGo">确认下载</button>
+    </div>
+</div>
+</div>
+
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<footer class="colophon">
+  <span>排版用字 · Noto Serif SC / EB Garamond / JetBrains Mono / Special Elite</span>
+  <span>AE数据检查 · AE Data Check · v1.0</span>
+</footer>
+
+<script src="xlsx.full.min.js"></script>
+<script src="jszip.min.js"></script>
+<script src="y-editor.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
