@@ -49,7 +49,8 @@
         <li>每处问题按列归类列出（含行号、当前值、建议值）。例如：空格/全角空格被清理，<code>"日班"</code>→<code>"白班"</code>，日期序列号→<code>"X月"</code>，产品大小写按字典修正。</li>
         <li>判定原则：<u>只判值，不替你揣度合理性</u>——如停机行产量为空可能正常，仅标出供你决定。班次时长规则：两班制（白/夜）每班 12h、三班制（含中班）每班 8h，以此核对 OAE 公式常数。</li>
         <li>每条可 <b>接受</b>、<b>手动修改</b>、<b>忽略</b>。同类型问题可在分组卡片上批量处理。</li>
-        <li>导出默认生成 <code>源文件名-Check.xlsx</code> 下载到浏览器目录；也可沿用源文件名下载或仅导 CSV 日志。导出的工作簿保留所有原有 Excel 公式。</li>
+        <li><b>导出总表</b>：导出修正后的 Excel 文件（保留公式/格式/宏）及疑误报告 CSV。</li>
+        <li><b>生成GAP文件</b>：选择资产和日期范围，按模板格式批量生成各资产的 GAP 工作簿，打包为 ZIP 下载。</li>
       </ol>
     </aside>
   </div>
@@ -69,7 +70,8 @@
     <div class="lb-sep">/</div>
     <div class="lb-item"><span class="lb-num pen" id="cntPending">0</span><span class="lb-lbl">待审批</span></div>
     <div class="lb-spacer"></div>
-    <button class="btn-export" id="exportBtn" disabled>导出下载</button>
+    <button class="btn-export" id="exportBtn" disabled>导出总表</button>
+    <button class="btn-gap" id="gapBtn" disabled>生成GAP文件</button>
   </div>
 
   <details class="syn-set" id="synSet">
@@ -102,17 +104,31 @@
   <div class="modal-paper">
     <div class="corner tl"></div><div class="corner tr"></div>
     <div class="corner bl"></div><div class="corner br"></div>
-    <h2>导出下载<span class="mp-sub">Export</span></h2>
-    <p class="mp-q">选择下载保存的方式：</p>
-    <label class="mp-opt"><input type="radio" name="save" value="direct" checked> <span><b>直接导出修正文件</b> — 基于原始文件修补，完整保留公式/格式/宏，后缀与源文件一致</span></label>
-    <label class="mp-opt"><input type="radio" name="save" value="ops"> <span><b>生成操作清单 + 报告</b> — 下载 操作清单.csv（用于 apply_fix.py）+ 疑误报告.csv</span></label>
-    <label class="mp-opt"><input type="radio" name="save" value="report"> <span><b>仅出报告</b> — 只导 CSV 批注日志</span></label>
-    <p class="mp-note">💡 推荐使用「直接导出修正文件」，无需 apply_fix.py，浏览器直接生成可用的 Excel 文件。</p>
+    <h2>导出总表<span class="mp-sub">Export</span></h2>
+    <p class="mp-q">将导出修正后的 Excel 文件及疑误报告 CSV。</p>
     <div class="mp-actions">
       <button class="btn-ghost" id="exportCancel">返回</button>
       <button class="btn-primary" id="exportGo">确认下载</button>
     </div>
 </div>
+</div>
+
+<div class="modal" id="gapModal" aria-hidden="true">
+  <div class="modal-paper" style="width:min(640px,92vw);max-height:88vh;overflow-y:auto">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <h2>生成GAP文件<span class="mp-sub">GAP Export</span></h2>
+    <div class="gap-date-row">
+      <label>开始日期 <input type="date" id="gapStartDate"></label>
+      <label>结束日期 <input type="date" id="gapEndDate"></label>
+    </div>
+    <p class="mp-q">选择要生成的资产：</p>
+    <div class="gap-asset-list" id="gapAssetList"></div>
+    <div class="mp-actions">
+      <button class="btn-ghost" id="gapCancel">返回</button>
+      <button class="btn-primary" id="gapGo">生成</button>
+    </div>
+  </div>
 </div>
 
 <div class="toast" id="toast" aria-live="polite"></div>
@@ -125,6 +141,6 @@
 <script src="xlsx.full.min.js"></script>
 <script src="jszip.min.js"></script>
 <script src="y-editor.js"></script>
-<script src="app.js"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

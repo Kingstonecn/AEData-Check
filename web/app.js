@@ -194,7 +194,7 @@ function scanAll(){const ws=S.ws,max=S.maxRow,issues=[];let id=0;
 function getIssueMonth(i){const ws=S.ws;const bv=r2v(ws,'B',i.row);if(bv!=null){const s=String(bv).trim();if(/^\d{2}年\d{2}月$/.test(s))return s}const cv=r2v(ws,'C',i.row);const m=fmtMonthFromDate(cv);return m}
 function getFilteredIssues(){if(!S.filterYear&&!S.filterMonth)return S.issues;return S.issues.filter(i=>{const m=getIssueMonth(i);if(!m)return false;if(S.filterYear&&!m.startsWith(S.filterYear+'年'))return false;if(S.filterMonth&&!m.endsWith(S.filterMonth+'月'))return false;return true})}
 function initDateFilter(){const years=new Set(),months=new Set();S.issues.forEach(i=>{const m=getIssueMonth(i);if(!m)return;const ym=m.match(/^(\d{2})年(\d{2})月$/);if(ym){years.add(ym[1]);months.add(ym[2])}});const ys=$('#filterYear'),ms=$('#filterMonth');ys.innerHTML='<option value="">全部年份</option>';[...years].sort().forEach(y=>ys.innerHTML+='<option value="'+y+'">20'+y+'年</option>');ms.innerHTML='<option value="">全部月份</option>';[...months].sort().forEach(mo=>ms.innerHTML+='<option value="'+mo+'">'+parseInt(mo)+'月</option>');S.filterYear=null;S.filterMonth=null;ys.value='';ms.value=''}
-function showReview(){$('#stage-load').classList.remove('active');$('#stage-review').classList.add('active');renderSynonyms();initDateFilter();renderChart('ws-line');renderTabs();renderIssues();updateCounts();$('#exportBtn').addEventListener('click',openExport);$('#exportCancel').addEventListener('click',closeExport);$('#exportGo').addEventListener('click',doExport);$('#filterApply').addEventListener('click',()=>{S.filterYear=$('#filterYear').value||null;S.filterMonth=$('#filterMonth').value||null;renderTabs();renderIssues();updateCounts()});$('#filterClear').addEventListener('click',()=>{S.filterYear=null;S.filterMonth=null;$('#filterYear').value='';$('#filterMonth').value='';renderTabs();renderIssues();updateCounts()});$$('.ct-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.ct-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart(btn.dataset.dim)}))}
+function showReview(){$('#stage-load').classList.remove('active');$('#stage-review').classList.add('active');renderSynonyms();initDateFilter();renderChart('ws-line');renderTabs();renderIssues();updateCounts();$('#exportBtn').addEventListener('click',openExport);$('#exportCancel').addEventListener('click',closeExport);$('#exportGo').addEventListener('click',doExport);$('#filterApply').addEventListener('click',()=>{S.filterYear=$('#filterYear').value||null;S.filterMonth=$('#filterMonth').value||null;renderTabs();renderIssues();updateCounts()});$('#filterClear').addEventListener('click',()=>{S.filterYear=null;S.filterMonth=null;$('#filterYear').value='';$('#filterMonth').value='';renderTabs();renderIssues();updateCounts()});$$('.ct-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.ct-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart(btn.dataset.dim)}));const gb=$('#gapBtn');if(gb)gb.addEventListener('click',openGAP);const gc=$('#gapCancel');if(gc)gc.addEventListener('click',closeGAP);const gg=$('#gapGo');if(gg)gg.addEventListener('click',generateGAP)}
 function renderSynonyms(){const grid=$('#synGrid');grid.innerHTML='';const block=(t,syn)=>{const c=document.createElement('div');c.className='syn-card';c.innerHTML='<div class="sc-head">'+t+'</div>';Object.keys(syn).forEach(from=>{const r=document.createElement('div');r.className='syn-row';r.innerHTML='<span>'+from+'</span><span class="arr">→</span>';const i=document.createElement('input');i.value=syn[from];i.addEventListener('change',()=>{syn[from]=i.value});r.appendChild(i);c.appendChild(r)});grid.appendChild(c)};block('STATUS',SYNONYMS.status);block('SHIFT',SYNONYMS.shift)}
 function renderChart(dim){const area=$('#chartArea');if(!area)return;const ws=S.ws;
   let groups=[];
@@ -270,7 +270,7 @@ function renderGroup(issues,col){const el=document.createElement('div');el.class
   return el}
 function typeLabel(t){const m={'missing':'数据缺失','dirty':'数据格式','whitespace':'空白字符','type':'格式','synonym':'同义词','unknown':'未知','case':'大小写','format':'格式','mismatch':'不一致','numstr':'文本数字','nonnum':'非数字','reverse':'倒序','formula':'公式','negtime':'负值','oaebase':'常数','residual':'残留','timealone':'不配套','dup':'重复','workshop':'车间','date-invalid':'日期无效','month-format':'月份格式','month-mismatch':'月份不符','sl+ul':'SL,UL冲突','sl→cat':'SL不匹配','ul→cat':'UL不匹配','sum≠hrs':'和≠班时','p≠sum':'时长≠分类和','nomap':'无映射','main-mismatch':'主类错','sub-mismatch':'次类错'};return m[t]||t}
 function updateCounts(){const a=S.issues.filter(i=>i.resolved==='accept').length,m=S.issues.filter(i=>i.resolved==='manual').length,ig=S.issues.filter(i=>i.resolved==='ignore').length
-  $('#cntDataRows').textContent=S.maxRow-S.dataStart+1;$('#cntTotal').textContent=S.issues.length;$('#cntAccept').textContent=a;$('#cntManual').textContent=m;$('#cntIgnore').textContent=ig;$('#cntPending').textContent=S.issues.length-a-m-ig;$('#exportBtn').style.opacity='1';$('#exportBtn').disabled=false;const nm=$('#newName');if(nm)nm.textContent=S.fileName.replace(/\.xlsx?m?$/,'')+'-Check.'+S.srcExt;const om=$('#origName');if(om)om.textContent=S.fileName}
+  $('#cntDataRows').textContent=S.maxRow-S.dataStart+1;$('#cntTotal').textContent=S.issues.length;$('#cntAccept').textContent=a;$('#cntManual').textContent=m;$('#cntIgnore').textContent=ig;$('#cntPending').textContent=S.issues.length-a-m-ig;$('#exportBtn').style.opacity='1';$('#exportBtn').disabled=false;const gb=$('#gapBtn');if(gb){gb.style.opacity='1';gb.disabled=false}const nm=$('#newName');if(nm)nm.textContent=S.fileName.replace(/\.xlsx?m?$/,'')+'-Check.'+S.srcExt;const om=$('#origName');if(om)om.textContent=S.fileName}
 function openExport(){$('#exportModal').classList.add('open');$('#exportModal').setAttribute('aria-hidden','false')}
 function closeExport(){$('#exportModal').classList.remove('open');$('#exportModal').setAttribute('aria-hidden','true')}
 const NUMERIC_COLS=new Set(['J','K','L','M','P','U','V','W','X']);
@@ -321,34 +321,315 @@ async function exportPatchedFile(){
     toast('已导出 '+name+'（修改 '+modCount+' 个单元格）');
   }catch(err){console.error('exportPatchedFile error:',err);toast('导出失败：'+err.message)}
 }
-async function doExport(){const mode=document.querySelector('input[name=save]:checked').value;closeExport()
-  if(mode==='report'){exportCSV();return}
-  if(mode==='direct'){await exportPatchedFile();exportCSV();return}
-  /* 生成操作清单 CSV：只包含接受和手动修改的条目 */
-  const rows=[['行','列','新值']];
-  S.issues.forEach(i=>{
-    if(i.resolved==='accept'||i.resolved==='manual'){
-      let val=i.value;
-      /* Y编辑器 manualVal 是 JSON */
-      if(i.resolved==='manual'&&i.manualVal){
-        try{
-          const f=JSON.parse(i.manualVal);
-          ['U','V','W','X','Y','Z','AA'].forEach(c=>{
-            if(f[c]!==undefined&&f[c]!=='')rows.push([i.row,c,String(f[c])]);
-          });
-          return;
-        }catch(e){val=i.value;}
-      }
-      rows.push([i.row,i.col,String(val)]);
-    }
-  });
-  const csv='﻿'+rows.map(r=>{const s=String(r[2]==null?'':r[2]);if(/[",\n]/.test(s))return r[0]+','+r[1]+',"'+s.replace(/"/g,'""')+'"';return r.join(',')}).join('\r\n');
-  download(new Blob([csv],{type:'text/csv;charset=utf-8'}),'操作清单.csv');
+async function doExport(){closeExport()
+  await exportPatchedFile();
   exportCSV();
-  toast('已导出操作清单 CSV 与报告 CSV')}
+  toast('已导出修正文件及报告 CSV')}
 function download(blob,name){const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},500)}
 function exportCSV(bookName){const rows=[['编号','行','列字母','列名','类型','问题描述','原值','订后值','处理方式']];const colMap={};COLS.forEach(c=>colMap[c.L]=c)
   S.issues.forEach(i=>rows.push([i.id,i.row,i.col,colMap[i.col]?colMap[i.col].cn:'',i.type,i.reason,esc(i.current),esc(i.value),i.resolved||'待批']))
   const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c==null?'':c);if(/[",\n]/.test(s))return'"'+s.replace(/"/g,'""')+'"';return s}).join(',')).join('\r\n')
   download(new Blob([csv],{type:'text/csv;charset=utf-8'}),(bookName||S.fileName).replace(/\.xlsx?m?$/,'')+'-report.csv')}
 initLoad();
+
+/* ===== GAP 表格生成 ===== */
+function openGAP(){
+  if(!S.wb.SheetNames.includes('Asset')){toast('未找到 Asset 工作表');return}
+  const assetWs=S.wb.Sheets['Asset'];
+  const assetRows=XLSX.utils.sheet_to_json(assetWs,{header:1,raw:1});
+  /* 默认上月第一天和最后一天 */
+  const now=new Date();const lastMonthEnd=new Date(now.getFullYear(),now.getMonth(),0);
+  const lastMonthStart=new Date(now.getFullYear(),now.getMonth()-1,1);
+  const fmtLocal=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  $('#gapStartDate').value=fmtLocal(lastMonthStart);
+  $('#gapEndDate').value=fmtLocal(lastMonthEnd);
+  /* 统计 AE Data 中每个 车间+资产 有多少条数据 */
+  const ws=S.ws,max=S.maxRow;
+  const dataCount=new Set();
+  for(let r=S.dataStart;r<=max;r++){
+    const w=getMergedVal(ws,'A',r),a=getMergedVal(ws,'I',r);
+    if(w&&a)dataCount.add(String(w).trim()+'\x00'+String(a).trim())
+  }
+  /* 按车间分组 */
+  const byWs={};
+  for(let i=1;i<assetRows.length;i++){
+    const r=assetRows[i];if(!r[0]&&!r[1])continue;
+    const workshop=String(r[0]||'').trim(),asset=String(r[1]||'').trim();
+    if(!dataCount.has(workshop+'\x00'+asset))continue;
+    if(!byWs[workshop])byWs[workshop]=[];
+    byWs[workshop].push({idx:i,name:asset,filename:String(r[2]||'')})
+  }
+  const list=$('#gapAssetList');list.innerHTML='';
+  Object.keys(byWs).sort().forEach(wsName=>{
+    const group=document.createElement('div');group.className='gap-ws-group';
+    const items=byWs[wsName];
+    const allChecked=items.map(it=>it.idx).join(',');
+    group.innerHTML='<label class="gap-ws-head"><input type="checkbox" class="gap-ws-check" data-indices="'+allChecked+'" checked><span>'+wsName+'</span><span class="gap-ws-count">('+items.length+')</span></label>';
+    const sub=document.createElement('div');sub.className='gap-ws-items';
+    items.forEach(it=>{
+      const div=document.createElement('label');div.className='gap-asset-item';
+      div.innerHTML='<input type="checkbox" value="'+it.idx+'" checked><span>'+it.name+(it.filename?' ('+it.filename+')':'')+'</span>';
+      sub.appendChild(div)
+    });
+    group.appendChild(sub);
+    list.appendChild(group)
+  });
+  /* 车间全选/取消联动 */
+  $$('.gap-ws-check').forEach(cb=>cb.addEventListener('change',e=>{
+    const indices=cb.dataset.indices.split(',');
+    cb.closest('.gap-ws-group').querySelectorAll('.gap-asset-item input').forEach(inp=>{
+      inp.checked=cb.checked
+    })
+  }));
+  $('#gapModal').classList.add('open');$('#gapModal').setAttribute('aria-hidden','false')
+}
+function closeGAP(){$('#gapModal').classList.remove('open');$('#gapModal').setAttribute('aria-hidden','true')}
+function toExcelSerial(d){return(d.getTime()-d.getTimezoneOffset()*60000-Date.UTC(1899,11,30))/86400000}
+function readTimeSerial(ws,col,row){
+  const v=r2v(ws,col,row);if(v==null||v==='')return null;
+  if(typeof v==='number')return v;
+  if(v instanceof Date)return toExcelSerial(v);
+  if(typeof v==='string'){const s=v.replace(/：/g,':').trim();const d=new Date(s);if(!isNaN(d.getTime()))return toExcelSerial(d)}
+  return null
+}
+function lookupProduct(map,name,colIdx){
+  const e=map[String(name).trim()];if(!e)return null;return e[colIdx]||''
+}
+async function generateGAP(){
+  const checked=$$('#gapAssetList input:checked').map(cb=>parseInt(cb.value));
+  if(!checked.length){toast('请至少选择一个资产');return}
+  closeGAP();toast('正在准备模板数据…');
+  try{
+    const assetWs=S.wb.Sheets['Asset'];
+    const assetRows=XLSX.utils.sheet_to_json(assetWs,{header:1,raw:1});
+    const sdVal=$('#gapStartDate').value,edVal=$('#gapEndDate').value;
+    if(!sdVal||!edVal){toast('请设置日期范围');return}
+    const startDate=new Date(sdVal+'T00:00:00'),endDate=new Date(edVal+'T00:00:00');
+    const startSerial=toExcelSerial(startDate),endSerial=toExcelSerial(endDate);
+    /* Product lookup */
+    const prodMap={};
+    if(S.wb.SheetNames.includes('Product')){
+      XLSX.utils.sheet_to_json(S.wb.Sheets['Product'],{header:1,raw:1}).forEach((r,i)=>{
+        if(i&&r[0])prodMap[String(r[0]).trim()]={2:r[1]||'',3:r[2]||''}
+      })
+    }
+    const nop2=lookupProduct(prodMap,'NOP',2),nop3=lookupProduct(prodMap,'NOP',3);
+    /* Category lookup */
+    const catMap=S.catMap||{};
+    let boLookup='';
+    if(S.wb.SheetNames.includes('Category')){
+      XLSX.utils.sheet_to_json(S.wb.Sheets['Category'],{header:1,raw:1}).forEach((r,i)=>{
+        if(!i)return;
+        if(r[1]&&String(r[1]).trim()==='No dem')boLookup=r[2]||''
+      })
+    }
+    /* AE Data cache */
+    const ws=S.ws,max=S.maxRow;
+    const aeData=[];
+    for(let r=S.dataStart;r<=max;r++){
+      const wsVal=getMergedVal(ws,'A',r),asVal=getMergedVal(ws,'I',r);
+      const dateVal=r2v(ws,'C',r);
+      let dateSerial=null;
+      if(typeof dateVal==='number')dateSerial=dateVal;
+      else if(dateVal instanceof Date)dateSerial=toExcelSerial(dateVal);
+      else if(typeof dateVal==='string'){const d=new Date(dateVal);if(!isNaN(d.getTime()))dateSerial=toExcelSerial(d)}
+      aeData.push({
+        r,workshop:wsVal?String(wsVal).trim():'',asset:asVal?String(asVal).trim():'',
+        dateSerial,product:r2s(ws,'H',r),actual:r2n(ws,'K',r),
+        startSerial:readTimeSerial(ws,'N',r),endSerial:readTimeSerial(ws,'O',r),
+        lossTime:r2n(ws,'P',r),reason:r2s(ws,'Q',r),
+        sl:r2n(ws,'V',r),ul:r2n(ws,'W',r),bo:r2n(ws,'X',r),
+        individual:r2s(ws,'AA',r)
+      })
+    }
+    const timeStamp=formatTimeStamp(new Date());
+    let count=0;
+    /* setXmlCell: replace cell value in sheet XML while preserving style (s attribute) */
+    function setXmlCell(xml,addr,val,isNum){
+      const re=new RegExp('<c r="'+addr+'"([^>]*)/>|<c r="'+addr+'"([^>]*)>.*?</c>','g');
+      const m=re.exec(xml);
+      if(!m)return xml;
+      const attrs=(m[1]||m[2]||'');
+      const sMatch=attrs.match(/s="(\d+)"/);
+      const sAttr=sMatch?' s="'+sMatch[1]+'"':'';
+      let rep;
+      if(val==null||val===''){
+        rep='<c r="'+addr+'"'+sAttr+'/>';
+      }else if(isNum){
+        rep='<c r="'+addr+'"'+sAttr+'><v>'+val+'</v></c>';
+      }else{
+        const esc=String(val).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        rep='<c r="'+addr+'"'+sAttr+' t="inlineStr"><is><t>'+esc+'</t></is></c>';
+      }
+      return xml.substring(0,m.index)+rep+xml.substring(m.index+m[0].length);
+    }
+    function escXml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+    /* Pre-read template sheet XMLs that need modification or relocation */
+    toast('正在加载模板XML…');
+    const tplZip=await JSZip.loadAsync(S.origBuf);
+    const tplSheet5=await tplZip.file('xl/worksheets/sheet5.xml').async('string');
+    const tplSheet6=await tplZip.file('xl/worksheets/sheet6.xml').async('string');
+    const tplSheet7=await tplZip.file('xl/worksheets/sheet7.xml').async('string');
+    const tplSheet8=await tplZip.file('xl/worksheets/sheet8.xml').async('string');
+    const tplSheet9=await tplZip.file('xl/worksheets/sheet9.xml').async('string');
+    const tplStyles=await tplZip.file('xl/styles.xml').async('string');
+    const tplTheme=await tplZip.file('xl/theme/theme1.xml').async('string');
+    const tplShared=await tplZip.file('xl/sharedStrings.xml').async('string');
+    const dlZip=new JSZip();
+    const total=checked.length;
+    for(let ci=0;ci<total;ci++){const assetIdx=checked[ci];
+      const ar=assetRows[assetIdx];if(!ar)continue;
+      const workshop=String(ar[0]||'').trim(),asset=String(ar[1]||'').trim();
+      const filename=String(ar[2]||'').trim(),config=String(ar[3]||'');
+      if(!filename)continue;
+      const batchName=String(ar[4]||'').replace(/_/g,' '),sheetName=String(ar[5]||'Production');
+      /* Modify Production sheet XML */
+      let prodXml=tplSheet5;
+      prodXml=setXmlCell(prodXml,'B3',filename,false);
+      prodXml=setXmlCell(prodXml,'B4',config,false);
+      let prodRow=7;
+      const prodData=[];
+      for(let d=new Date(startDate);d<=endDate;d.setDate(d.getDate()+1)){
+        const dateSer=toExcelSerial(d);
+        const dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        let actualSum=0,productSet=false,prodName=nop2,prodCode=nop3;
+        for(const ae of aeData){
+          if(ae.workshop===workshop&&ae.asset===asset&&ae.dateSerial!=null&&Math.abs(ae.dateSerial-dateSer)<0.5&&ae.product){
+            if(!productSet){
+              const p2=lookupProduct(prodMap,ae.product,2),p3=lookupProduct(prodMap,ae.product,3);
+              if(p2)prodName=p2;if(p3)prodCode=p3;productSet=true
+            }
+            actualSum+=ae.actual
+          }
+        }
+        if(actualSum===0){prodName=nop2;prodCode=nop3}
+        const startDT=dateSer+8/24,endDT=dateSer+1+8/24;
+        prodXml=setXmlCell(prodXml,'A'+prodRow,batchName+' '+dateStr,false);
+        prodXml=setXmlCell(prodXml,'B'+prodRow,prodName||'',false);
+        prodXml=setXmlCell(prodXml,'C'+prodRow,prodCode||'',false);
+        prodXml=setXmlCell(prodXml,'D'+prodRow,'KG',false);
+        prodXml=setXmlCell(prodXml,'F'+prodRow,startDT,true);
+        prodXml=setXmlCell(prodXml,'G'+prodRow,endDT,true);
+        prodXml=setXmlCell(prodXml,'H'+prodRow,actualSum,true);
+        prodData.push({row:prodRow,startDT,endDT,prodName});
+        prodRow++
+      }
+      /* Modify Loss Details sheet XML */
+      let lossXml=tplSheet6;
+      let lossRow=2;
+      const lossByProdRow={};
+      for(const ae of aeData){
+        if(ae.workshop!==workshop||ae.asset!==asset)continue;
+        if(ae.lossTime<=0)continue;
+        if(ae.startSerial==null||ae.endSerial==null)continue;
+        if(ae.startSerial<startSerial+8/24||ae.endSerial>endSerial+1+8/24)continue;
+        let prodR=0;
+        for(const pd of prodData){if(ae.startSerial>=pd.startDT-1/86400&&ae.startSerial<pd.endDT){prodR=pd.row;break}}
+        lossXml=setXmlCell(lossXml,'A'+lossRow,prodR,true);
+        lossXml=setXmlCell(lossXml,'B'+lossRow,'ATL',false);
+        if(ae.individual){
+          const cat=catMap[String(ae.individual).trim()];
+          if(cat){
+            lossXml=setXmlCell(lossXml,'C'+lossRow,cat.main||'',false);
+            lossXml=setXmlCell(lossXml,'D'+lossRow,cat.sub||'',false);
+            lossXml=setXmlCell(lossXml,'E'+lossRow,ae.individual,false);
+            lossXml=setXmlCell(lossXml,'F'+lossRow,ae.individual,false)
+          }
+        }else if(ae.bo===ae.lossTime){
+          lossXml=setXmlCell(lossXml,'C'+lossRow,'BO',false);
+          lossXml=setXmlCell(lossXml,'D'+lossRow,'No dem',false);
+          lossXml=setXmlCell(lossXml,'E'+lossRow,boLookup,false);
+          lossXml=setXmlCell(lossXml,'F'+lossRow,boLookup,false)
+        }
+        lossXml=setXmlCell(lossXml,'G'+lossRow,ae.startSerial,true);
+        lossXml=setXmlCell(lossXml,'H'+lossRow,ae.endSerial,true);
+        lossXml=setXmlCell(lossXml,'I'+lossRow,ae.lossTime/24,true);
+        lossXml=setXmlCell(lossXml,'M'+lossRow,ae.reason||'',false);
+        lossByProdRow[prodR]=true;
+        lossRow++
+      }
+      for(const pd of prodData){
+        if(pd.prodName!=='NOP')continue;
+        if(lossByProdRow[pd.row])continue;
+        lossXml=setXmlCell(lossXml,'A'+lossRow,pd.row,true);
+        lossXml=setXmlCell(lossXml,'B'+lossRow,'ATL',false);
+        lossXml=setXmlCell(lossXml,'C'+lossRow,'BO',false);
+        lossXml=setXmlCell(lossXml,'D'+lossRow,'No dem',false);
+        lossXml=setXmlCell(lossXml,'E'+lossRow,boLookup,false);
+        lossXml=setXmlCell(lossXml,'F'+lossRow,boLookup,false);
+        lossXml=setXmlCell(lossXml,'G'+lossRow,pd.startDT,true);
+        lossXml=setXmlCell(lossXml,'H'+lossRow,pd.endDT,true);
+        lossXml=setXmlCell(lossXml,'I'+lossRow,(pd.endDT-pd.startDT),true);
+        lossRow++
+      }
+      /* Build new xlsx zip from scratch with only needed files */
+      const outZip=new JSZip();
+      outZip.file('[Content_Types].xml',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+        '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+        '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+        '<Default Extension="xml" ContentType="application/xml"/>'+
+        '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'+
+        '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+        '<Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+        '<Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+        '<Override PartName="/xl/worksheets/sheet4.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+        '<Override PartName="/xl/worksheets/sheet5.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'+
+        '<Override PartName="/xl/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/>'+
+        '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+
+        '<Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/>'+
+        '<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>'+
+        '<Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/>'+
+        '</Types>');
+      outZip.file('_rels/.rels',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>'+
+        '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>'+
+        '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties" Target="docProps/app.xml"/>'+
+        '</Relationships>');
+      outZip.file('xl/workbook.xml',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+        '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
+        'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+        '<sheets>'+
+        '<sheet name="'+escXml(sheetName)+'" sheetId="13" r:id="rId1"/>'+
+        '<sheet name="Loss Details" sheetId="17" r:id="rId2"/>'+
+        '<sheet name="Multi Product PS" sheetId="14" r:id="rId3"/>'+
+        '<sheet name="MEW Data" sheetId="15" r:id="rId4"/>'+
+        '<sheet name="MEW Loss Data" sheetId="16" r:id="rId5"/>'+
+        '</sheets></workbook>');
+      outZip.file('xl/_rels/workbook.xml.rels',
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+        '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+        '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>'+
+        '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/>'+
+        '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/>'+
+        '<Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet4.xml"/>'+
+        '<Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet5.xml"/>'+
+        '<Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme" Target="theme/theme1.xml"/>'+
+        '<Relationship Id="rId7" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+
+        '<Relationship Id="rId8" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/>'+
+        '</Relationships>');
+      outZip.file('xl/worksheets/sheet1.xml',prodXml);
+      outZip.file('xl/worksheets/sheet2.xml',lossXml);
+      outZip.file('xl/worksheets/sheet3.xml',tplSheet7);
+      outZip.file('xl/worksheets/sheet4.xml',tplSheet8);
+      outZip.file('xl/worksheets/sheet5.xml',tplSheet9);
+      outZip.file('xl/styles.xml',tplStyles);
+      outZip.file('xl/theme/theme1.xml',tplTheme);
+      outZip.file('xl/sharedStrings.xml',tplShared);
+      outZip.file('docProps/core.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:creator>AE Data Check</dc:creator><cp:lastModifiedBy>AE Data Check</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">'+new Date().toISOString()+'</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">'+new Date().toISOString()+'</dcterms:modified></cp:coreProperties>');
+      outZip.file('docProps/app.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>AE Data Check</Application></Properties>');
+      toast('正在生成 '+filename+' ('+(ci+1)+'/'+total+')…');
+      const blob=await outZip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      dlZip.file(filename+'_'+timeStamp+'.xlsx',blob);
+      count++
+    }
+    toast('正在打包ZIP文件…');
+    const dlBlob=await dlZip.generateAsync({type:'blob',mimeType:'application/zip'});
+    download(dlBlob,'GAP_'+timeStamp+'.zip');
+    toast('已生成 '+count+' 个GAP文件，已打包为ZIP下载')
+  }catch(err){console.error('generateGAP error:',err);toast('生成失败：'+err.message)}
+}
+function formatTimeStamp(d){const p=n=>String(n).padStart(2,'0');return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'_'+p(d.getHours())+p(d.getMinutes())}
