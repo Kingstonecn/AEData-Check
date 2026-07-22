@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+SC:wght@400;500;700;900&family=Special+Elite&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="lib/styles.css">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -73,11 +73,6 @@
     <button class="btn-export" id="exportBtn" disabled>导出总表</button>
     <button class="btn-gap" id="gapBtn" disabled>生成GAP文件</button>
   </div>
-
-  <details class="syn-set" id="synSet">
-    <summary>同义词表 · 预填建议（点击展开修订）<span class="syn-hint">用于"接受"的默认映射</span></summary>
-    <div class="syn-grid" id="synGrid"></div>
-  </details>
 
   <details class="chart-set" id="chartSet">
     <summary>疑误分布图表<span class="syn-hint">按维度统计疑误数量</span></summary>
@@ -151,9 +146,9 @@
   <span>AE数据检查 · AE Data Check · v1.0</span>
 </footer>
 
-<script src="xlsx.full.min.js"></script>
-<script src="jszip.min.js"></script>
-<script src="y-editor.js"></script>
-<script src="app.js?v=9"></script>
+<script src="lib/xlsx.full.min.js"></script>
+<script src="lib/jszip.min.js"></script>
+<script src="lib/y-editor.js"></script>
+<script src="lib/app.js?v=39"></script>
 </body>
 </html>

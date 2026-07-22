@@ -8,9 +8,9 @@ let COLS=[
 {L:'F',type:'line'},{L:'G',type:'status'},{L:'H',type:'product'},{L:'I',type:'asset'},
 {L:'J',type:'num'},{L:'K',type:'num'},{L:'L',type:'num'},{L:'M',type:'num'},{L:'N',type:'time'},{L:'O',type:'time'},
 {L:'P',type:'formula',noEdit:true},{L:'Q',type:'text'},{L:'R',type:'text'},{L:'S',type:'text'},{L:'T',type:'text'},
-{L:'U',type:'oae',noEdit:true},{L:'V',type:'num'},{L:'W',type:'num'},{L:'X',type:'num'},{L:'Y',type:'formula',noEdit:true},
+{L:'U',type:'oae',noEdit:true},{L:'V',type:'num'},{L:'W',type:'num'},{L:'X',type:'num'},{L:'Y',type:'formula'},
 {L:'Z',type:'formula',noEdit:true},{L:'AA',type:'individual'},{L:'AB',type:'residual'}];
-const SHIFT_ENUM=['早班','白班','夜班','中班'];const STATUS_ENUM=['生产','停机'];const LINE_PATTERN=/^\d+#$/;
+const SHIFT_ENUM=['早班','白班','夜班','中班'];const STATUS_ENUM=['生产','停机','升温','进料'];const LINE_PATTERN=/^\d+#$/;
 let SYNONYMS={status:{'开机':'生产','运行':'生产','计划':'停机','停/':'停机'},shift:{'日班':'白班','晚班':'夜班'}};
 const FW=String.fromCharCode(0x3000);
 const dirty=s=>/\s/.test(s)||s.includes(FW);
@@ -20,7 +20,7 @@ const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.queryS
 function esc(v){if(v==null)return'␣';if(typeof v=='string')return v;if(v instanceof Date)return v.toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit'});return String(v)}
 function escAA(v){return v==null||v===''?'␣':String(v)}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2200)}
-function serialToDate(n){const wd=Math.floor(n),frac=n-wd;return new Date(1899,11,30+(n<60?wd:wd-1),0,0,0,Math.round(frac*86400000))}
+function serialToDate(n){const wd=Math.floor(n),frac=n-wd;return new Date(1899,11,30+(n<60?wd+1:wd),0,0,0,Math.round(frac*86400000))}
 const S={wb:null,ws:null,fileName:'资产数据(GAP).xlsx',srcExt:'xlsx',dataStart:3,maxRow:0,catMap:{},origBuf:null,
   dict:{product:new Set(),asset:new Map(),individual:new Set(),mergedF:new Set(),mergedA:new Set(),mergedMap:{}},
   shiftHours:new Map(),issues:[],curCol:null,filterYear:null,filterMonth:null};
@@ -35,7 +35,7 @@ function initLoad(){const dz=$('#dropzone'),fi=$('#fileInput');
 async function handleFile(file){try{const buf=await file.arrayBuffer();S.origBuf=buf.slice(0);toast('正在解析…');const wb=XLSX.read(buf,{type:'array',cellFormula:true,cellNF:true});
   if(!wb.SheetNames.includes('AE Data')){toast('未找到 AE Data 工作表');return}
   S.wb=wb;S.ws=wb.Sheets['AE Data'];S.fileName=file.name;S.srcExt=/\.xlsm?$/i.test(file.name)?'xlsm':(/\.xlsx$/i.test(file.name)?'xlsx':'xls');
-  readHeaders();buildDicts();detectShiftHours();detectMergedCells();S.issues=scanAll();showReview();toast('已载入：共 '+S.issues.length+' 处疑误')
+  readHeaders();buildDicts();detectShiftHours();detectMergedCells();S.issues=scanAll();showReview();toast('已载入：共 '+S.issues.filter(isCounted).length+' 处疑误')
 }catch(err){console.error(err);toast('载入失败：'+err.message)}}
 function readHeaders(){const ws=S.ws;const r1=[],r2=[];
   for(let i=0;i<28;i++){r1[i]=ws[XLSX.utils.encode_cell({r:0,c:i})]?.v;r2[i]=ws[XLSX.utils.encode_cell({r:1,c:i})]?.v}
@@ -96,7 +96,7 @@ function monthLabelToSerial(s){
 }
 function isMergedF(r){return S.dict.mergedF.has(r)}
 /* 扫描 */
-function scanAll(){const ws=S.ws,max=S.maxRow,issues=[];let id=0;
+function scanAll(){const ws=S.ws,max=S.maxRow,issues=[];let id=0;const daySum={};
   const push=(r,c,t,reason,cur,sug)=>{issues.push({id:++id,row:r,col:c,type:t,reason,current:(cur==null||cur===''?'␣':String(cur)),suggest:sug==null?'␣':String(sug),value:sug==null?'␣':String(sug),resolved:null,manualVal:null,demo:true})};
   const push1=(r,c,t,reason,cur,sug)=>{issues.push({id:++id,row:r,col:c,type:t,reason,current:(cur==null||cur===''?'␣':String(cur)),suggest:sug==null?'␣':String(sug),value:sug==null?'␣':String(sug),resolved:null,manualVal:null,demo:false})};
   for(let r=S.dataStart;r<=max;r++){
@@ -107,9 +107,13 @@ function scanAll(){const ws=S.ws,max=S.maxRow,issues=[];let id=0;
     const fv=r2v(ws,'F',r);
     if(fv==null||fv===''){if(!isMergedF(r))push(r,'F','missing','产线为空（可忽略）','-','-')}else{const s=String(fv);if(dirty(s))push1(r,'F','dirty','含空格',vis(s),vis(clean(s)));else if(!LINE_PATTERN.test(s))push(r,'F','unknown','格式异常',s,'-')}
     const gv=r2v(ws,'G',r);
-    if(gv==null||gv==='')push(r,'G','missing','状态为空','-','-');else{const s=String(gv);if(dirty(s))push(r,'G','dirty','含空白字符',vis(s),vis(clean(s)));else if(STATUS_ENUM.includes(s)){}else{const syn=SYNONYMS.status[s];if(syn)push(r,'G','synonym','同义词«'+vis(s)+'»→',s,syn,{demo:true});else push(r,'G','unknown','可加入词库',s,'-')}}
-    const hv=r2v(ws,'H',r);
-    if(hv==null||hv===''||(typeof hv==='string'&&/^\s+$/.test(hv)))push(r,'H','missing','产品为空','-','-');else{const s=String(hv);if(dirty(s))push(r,'H','dirty','含空白字符',vis(s),vis(clean(s)));else if(!S.dict.product.has(s)){let hit=0;for(const p of S.dict.product)if(p.toLowerCase()===s.toLowerCase()){hit=1;push(r,'H','case','大小写不符',s,p);break}if(!hit)push(r,'H','unknown','不在Product字典',s,'-')}}
+    if(gv!=null&&gv!==''){const s=String(gv);if(dirty(s))push(r,'G','dirty','含空白字符',vis(s),vis(clean(s)));else if(STATUS_ENUM.includes(s)){}else{const syn=SYNONYMS.status[s];if(syn)push(r,'G','synonym','同义词«'+vis(s)+'»→',s,syn)}}
+    const hv=r2v(ws,'H',r),kv=r2v(ws,'K',r);
+    const hasProd=hv!=null&&hv!==''&&!(typeof hv==='string'&&/^\s+$/.test(hv));
+    const hasActual=kv!=null&&kv!==''&&!(typeof kv==='string'&&/^\s+$/.test(kv))&&r2n(ws,'K',r)>0;
+    if(!hasProd&&hasActual)push(r,'H','missing','有实际产量但产品为空','-','-');
+    else if(hasProd&&!hasActual)push(r,'H','unexpected','无实际产量但有产品名',String(hv),'');
+    else if(hasProd){const s=String(hv);if(dirty(s))push(r,'H','dirty','含空白字符',vis(s),vis(clean(s)));else if(!S.dict.product.has(s)){let hit=0;for(const p of S.dict.product)if(p.toLowerCase()===s.toLowerCase()){hit=1;push(r,'H','case','大小写不符',s,p);break}if(!hit)push(r,'H','unknown','不在Product字典',s,'-')}}
     /* C列日期检查 */
     const cv=r2v(ws,'C',r);
     if(cv==null||cv==='')push(r,'C','missing','日期为空','-','-');
@@ -168,7 +172,7 @@ function scanAll(){const ws=S.ws,max=S.maxRow,issues=[];let id=0;
     }
     if(nv instanceof Date&&ov instanceof Date&&ov<nv)push(r,'O','reverse','结束早于开始',String(nv)+'>'+String(ov),'-')
     const pc=ws['P'+r];if(pc&&pc.f){const pf=String(pc.f).replace(/\s/g,'');if(!pf.startsWith('ROUND((O')&&!/O\d+-N\d+/.test(pf))push1(r,'P','formula','公式异常',pc.f,'-')}
-    if(typeof r2v(ws,'P',r)==='number'&&r2v(ws,'P',r)<0)push1(r,'P','negtime','值为负',String(r2v(ws,'P',r)),'-')
+    const pv=r2v(ws,'P',r);if(typeof pv==='number'&&pv<0)push1(r,'P','negtime','值为负',String(pv),'-')
     ['Q','R','S','T'].forEach(L=>{const tv=r2v(ws,L,r);if(tv!=null&&typeof tv==='string'&&dirty(tv))push(r,L,'dirty','含空白字符',vis(tv),vis(clean(tv)))})
     const uc=ws['U'+r];if(uc&&uc.f){const m=String(uc.f).match(/^=\s*(\d+)\s*-/);if(m){const base=parseInt(m[1]),exp=S.shiftHours.get(r)||12;if(base!==exp)push1(r,'U','oaebase','基数='+base+'与班制('+exp+'h)不符','='+base+'-...','='+exp+'-...')}}
     ['V','W','X'].forEach(L=>{const nv2=r2v(ws,L,r);if(nv2!=null&&typeof nv2==='string'&&nv2.trim()!==''){if(dirty(nv2))push1(r,L,'dirty','含空格',vis(nv2),vis(clean(nv2)));else if(!isNaN(Number(nv2)))push1(r,L,'numstr','文本型数字',nv2,Number(nv2));else push1(r,L,'nonnum','非数字',nv2,'-')}})
@@ -181,21 +185,16 @@ function scanAll(){const ws=S.ws,max=S.maxRow,issues=[];let id=0;
     else if(slv>0&&yv!=='SL')push1(r,'Y','sl→cat','存在SL损失时间但主AE分类≠SL',yv||'(空)','SL')
     else if(ulv>0&&yv!=='UL')push1(r,'Y','ul→cat','存在UL损失时间但主AE分类≠UL',yv||'(空)','UL')
     const uvc=r2n(ws,'U',r);
-    if(uvc>0||slv>0||ulv>0||box>0){const hrs=S.shiftHours.get(r)||12;const sum=uvc+slv+ulv+box;if(Math.abs(sum-hrs)>0.05)push1(r,'cat','sum≠hrs','OAE+SL+UL+BO='+sum+'≠班制'+hrs+'h',sum+'≠'+hrs,'-')}
-    const pv=r2n(ws,'P',r);
-    if(pv>0||slv>0||ulv>0||box>0){const sum2=slv+ulv+box;if(Math.abs(pv-sum2)>0.05)push1(r,'cat','p≠sum','损失时间='+pv+'≠SL+UL+BO='+sum2,pv+'≠'+sum2,'-')}
-    const aav2=r2v(ws,'AA',r);
-    if(aav2!=null&&aav2!==''){const ind=String(aav2).trim();const cat=S.catMap[ind];if(!cat)push1(r,'Y','nomap','AE分类不在Category字典',vis(ind),'-');else{const yv2=r2s(ws,'Y',r);const zv2=r2s(ws,'Z',r);if(yv2!==null&&yv2!==''&&cat.main&&yv2!==cat.main)push1(r,'Y','main-mismatch','主AE分类应为「'+cat.main+'」',yv2,cat.main);if(zv2!==null&&zv2!==''&&cat.sub&&zv2!==cat.sub)push1(r,'Y','sub-mismatch','次AE分类应为「'+cat.sub+'」',zv2,cat.sub)}}
+    if(uvc>0||slv>0||ulv>0||box>0){const dayKey=r2s(ws,'A',r)+'|'+r2s(ws,'I',r)+'|'+r2s(ws,'C',r);if(!daySum[dayKey])daySum[dayKey]={rows:[],total:0};daySum[dayKey].rows.push(r);daySum[dayKey].total+=uvc+slv+ulv+box}
+    if(aav!=null&&aav!==''){const ind=String(aav).trim();const cat=S.catMap[ind];if(!cat)push1(r,'Y','nomap','AE分类不在Category字典',vis(ind),'-');else{const zv2=r2s(ws,'Z',r);if(yv!==null&&yv!==''&&cat.main&&yv!==cat.main)push1(r,'Y','main-mismatch','主AE分类应为「'+cat.main+'」',yv,cat.main);if(zv2!==null&&zv2!==''&&cat.sub&&zv2!==cat.sub)push1(r,'Y','sub-mismatch','次AE分类应为「'+cat.sub+'」',zv2,cat.sub)}}
   }
-  const ss=new Map();
-  for(let r=S.dataStart;r<=max;r++){const gv=r2v(ws,'G',r);if(gv==null||gv==='')continue;const st=clean(String(gv));if(!STATUS_ENUM.includes(st))continue;const d=r2s(ws,'C',r),l=r2s(ws,'F',r),s=r2s(ws,'D',r),a=r2s(ws,'A',r);if(!d||!s)continue;const key=(a||'')+'|'+d+'|'+(l||'(空)')+'|'+s;if(ss.has(key)&&ss.get(key)!==st)push1(r,'G','dup','同班次已有「'+ss.get(key)+'」又现「'+st+'」',st,'-');if(!ss.has(key))ss.set(key,st)}
+  Object.keys(daySum).forEach(k=>{const d=daySum[k];if(Math.abs(d.total-24)>0.05)push1(d.rows[0],'Y','sum≠24','同日OAE+SL+UL+BO='+d.total+'≠24h（行#'+d.rows.join(',')+'）',d.total,'-')});
   return issues}
 /* 渲染 */
 function getIssueMonth(i){const ws=S.ws;const bv=r2v(ws,'B',i.row);if(bv!=null){const s=String(bv).trim();if(/^\d{2}年\d{2}月$/.test(s))return s}const cv=r2v(ws,'C',i.row);const m=fmtMonthFromDate(cv);return m}
 function getFilteredIssues(){if(!S.filterYear&&!S.filterMonth)return S.issues;return S.issues.filter(i=>{const m=getIssueMonth(i);if(!m)return false;if(S.filterYear&&!m.startsWith(S.filterYear+'年'))return false;if(S.filterMonth&&!m.endsWith(S.filterMonth+'月'))return false;return true})}
 function initDateFilter(){const years=new Set(),months=new Set();S.issues.forEach(i=>{const m=getIssueMonth(i);if(!m)return;const ym=m.match(/^(\d{2})年(\d{2})月$/);if(ym){years.add(ym[1]);months.add(ym[2])}});const ys=$('#filterYear'),ms=$('#filterMonth');ys.innerHTML='<option value="">全部年份</option>';[...years].sort().forEach(y=>ys.innerHTML+='<option value="'+y+'">20'+y+'年</option>');ms.innerHTML='<option value="">全部月份</option>';[...months].sort().forEach(mo=>ms.innerHTML+='<option value="'+mo+'">'+parseInt(mo)+'月</option>');S.filterYear=null;S.filterMonth=null;ys.value='';ms.value=''}
-function showReview(){$('#stage-load').classList.remove('active');$('#stage-review').classList.add('active');renderSynonyms();initDateFilter();renderChart('ws-line');renderTabs();renderIssues();updateCounts();$('#exportBtn').addEventListener('click',openExport);$('#exportCancel').addEventListener('click',closeExport);$('#exportGo').addEventListener('click',doExport);$('#filterApply').addEventListener('click',()=>{S.filterYear=$('#filterYear').value||null;S.filterMonth=$('#filterMonth').value||null;renderTabs();renderIssues();updateCounts()});$('#filterClear').addEventListener('click',()=>{S.filterYear=null;S.filterMonth=null;$('#filterYear').value='';$('#filterMonth').value='';renderTabs();renderIssues();updateCounts()});$$('.ct-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.ct-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart(btn.dataset.dim)}));const gb=$('#gapBtn');if(gb)gb.addEventListener('click',openGAP);const gc=$('#gapCancel');if(gc)gc.addEventListener('click',closeGAP);const gg=$('#gapGo');if(gg)gg.addEventListener('click',generateGAP);const grc=$('#gapReportClose');if(grc)grc.addEventListener('click',()=>{$('#gapReportModal').classList.remove('open');$('#gapReportModal').setAttribute('aria-hidden','true')})}
-function renderSynonyms(){const grid=$('#synGrid');grid.innerHTML='';const block=(t,syn)=>{const c=document.createElement('div');c.className='syn-card';c.innerHTML='<div class="sc-head">'+t+'</div>';Object.keys(syn).forEach(from=>{const r=document.createElement('div');r.className='syn-row';r.innerHTML='<span>'+from+'</span><span class="arr">→</span>';const i=document.createElement('input');i.value=syn[from];i.addEventListener('change',()=>{syn[from]=i.value});r.appendChild(i);c.appendChild(r)});grid.appendChild(c)};block('STATUS',SYNONYMS.status);block('SHIFT',SYNONYMS.shift)}
+function showReview(){$('#stage-load').classList.remove('active');$('#stage-review').classList.add('active');initDateFilter();renderChart('ws-line');renderTabs();renderIssues();updateCounts();$('#exportBtn').addEventListener('click',openExport);$('#exportCancel').addEventListener('click',closeExport);$('#exportGo').addEventListener('click',doExport);$('#filterApply').addEventListener('click',()=>{S.filterYear=$('#filterYear').value||null;S.filterMonth=$('#filterMonth').value||null;renderTabs();renderIssues();updateCounts()});$('#filterClear').addEventListener('click',()=>{S.filterYear=null;S.filterMonth=null;$('#filterYear').value='';$('#filterMonth').value='';renderTabs();renderIssues();updateCounts()});$$('.ct-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.ct-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart(btn.dataset.dim)}));const gb=$('#gapBtn');if(gb)gb.addEventListener('click',openGAP);const gc=$('#gapCancel');if(gc)gc.addEventListener('click',closeGAP);const gg=$('#gapGo');if(gg)gg.addEventListener('click',generateGAP);const grc=$('#gapReportClose');if(grc)grc.addEventListener('click',()=>{$('#gapReportModal').classList.remove('open');$('#gapReportModal').setAttribute('aria-hidden','true')})}
 function renderChart(dim){const area=$('#chartArea');if(!area)return;const ws=S.ws;
   let groups=[];
   if(dim==='ws-line'){
@@ -223,58 +222,39 @@ function renderChart(dim){const area=$('#chartArea');if(!area)return;const ws=S.
   html+='</div><div class="chart-xaxis"></div>';
   if(groups._extra)html+='<p style="font-size:.78rem;color:var(--ink-faded);margin-top:.4rem;font-family:var(--serif-cn)">'+groups._extra+'</p>';
   area.innerHTML=html}
+function isCounted(i){return i.type!=='month-format'&&!(i.col==='F'&&i.type==='missing')&&!(i.col==='H'&&i.type==='unexpected')}
 function renderTabs(){const wrap=$('#colTabs');wrap.innerHTML='';const filtered=getFilteredIssues();const byCol={};filtered.forEach(i=>{(byCol[i.col]||(byCol[i.col]=[])).push(i)});S.curCol=null;
-  COLS.forEach(col=>{const cnt=(byCol[col.L]||[]).length;if(!cnt)return;const t=document.createElement('div');t.className='col-tab';t.innerHTML='<span class="ct-letter">'+col.L+'</span><span>'+(col.cn||col.L)+'</span><span class="ct-badge">'+cnt+'</span>';t.addEventListener('click',()=>{S.curCol=col.L;renderIssues(col.L);$$('.col-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active')});wrap.appendChild(t)})
-  const all=document.createElement('div');all.className='col-tab active';all.style.background='#1a1410';all.style.color='#f3ecdc';all.innerHTML='<span>全</span><span>全部</span><span class="ct-badge" style="background:#b1281e">'+filtered.length+'</span>';all.style.order='-1';all.addEventListener('click',()=>{S.curCol=null;renderIssues();$$('.col-tab').forEach(x=>x.classList.remove('active'));all.classList.add('active')});wrap.insertBefore(all,wrap.firstChild)}
+  COLS.forEach(col=>{const arr=(byCol[col.L]||[]);const cnt=arr.filter(isCounted).length;if(!cnt)return;const t=document.createElement('div');t.className='col-tab';t.innerHTML='<span class="ct-letter">'+col.L+'</span><span>'+(col.cn||col.L)+'</span><span class="ct-badge">'+cnt+'</span>';t.addEventListener('click',()=>{S.curCol=col.L;renderIssues(col.L);$$('.col-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active')});wrap.appendChild(t)})
+  const all=document.createElement('div');all.className='col-tab active';all.style.background='#1a1410';all.style.color='#f3ecdc';all.innerHTML='<span>全</span><span>全部</span><span class="ct-badge" style="background:#b1281e">'+filtered.filter(isCounted).length+'</span>';all.style.order='-1';all.addEventListener('click',()=>{S.curCol=null;renderIssues();$$('.col-tab').forEach(x=>x.classList.remove('active'));all.classList.add('active')});wrap.insertBefore(all,wrap.firstChild)}
 function renderIssues(filterCol){const stream=$('#issuesStream');stream.innerHTML='';const filtered=getFilteredIssues();const groups={};filtered.forEach(i=>{if(!filterCol||i.col===filterCol){(groups[i.col]||(groups[i.col]=[])).push(i)}})
-  COLS.forEach(col=>{const arr=groups[col.L];if(!arr||!arr.length)return;const g=document.createElement('div');g.className='col-group';g.dataset.col=col.L;const h=document.createElement('div');h.className='cg-head';h.innerHTML='<span class="cg-letter">'+col.L+'</span><span class="cg-title">'+(col.cn||col.L)+'</span><span class="cg-en">'+(col.en||'')+'</span><span class="cg-count">疑误 <b>'+arr.length+'</b> 处</span>';g.appendChild(h);const sub={};arr.forEach(i=>{const k=groupKey(i);(sub[k]||(sub[k]=[])).push(i)});Object.keys(sub).forEach(k=>g.appendChild(renderGroup(sub[k],col)));stream.appendChild(g)})}
+  COLS.forEach(col=>{const arr=groups[col.L];if(!arr||!arr.length)return;const cnt=arr.filter(isCounted).length;const g=document.createElement('div');g.className='col-group';g.dataset.col=col.L;const h=document.createElement('div');h.className='cg-head';h.innerHTML='<span class="cg-letter">'+col.L+'</span><span class="cg-title">'+(col.cn||col.L)+'</span><span class="cg-en">'+(col.en||'')+'</span><span class="cg-count">疑误 <b>'+cnt+'</b> 处</span>';g.appendChild(h);const sub={};arr.forEach(i=>{const k=groupKey(i);(sub[k]||(sub[k]=[])).push(i)});Object.keys(sub).forEach(k=>g.appendChild(renderGroup(sub[k],col)));stream.appendChild(g)})}
 function renderGroup(issues,col){const el=document.createElement('div');el.className='issue-group';el.dataset.type=issues[0].type;if(issues.every(i=>i.resolved))el.classList.add('dismissed')
-  const first=issues[0],cnt=issues.length,pending=issues.filter(i=>!i.resolved).length,hasSug=(first.suggest!=null&&first.suggest!=='␣'&&first.suggest!==''&&first.suggest!=='-')||first.type==='whitespace',isMulti=cnt>1,lbl=typeLabel(first.type)
+  const first=issues[0],cnt=issues.length,hasSug=(first.suggest!=null&&first.suggest!=='␣'&&first.suggest!==''&&first.suggest!=='-')||first.type==='whitespace',isMulti=cnt>1,lbl=typeLabel(first.type)
   const rows=cnt<=5?issues.map(i=>'#'+i.row).join(' '):issues.slice(0,5).map(i=>'#'+i.row).join(' ')+' …等 '+cnt+' 行'
-  const normCur=s=>String(s).replace(/[\s　␣]+/g,'').trim();
-  const byCur={};let multi=false;
-  if(isMulti&&first.demo){issues.forEach(i=>{const k=normCur(i.current)+'\x00'+(i.suggest==null?'∅':normCur(i.suggest));(byCur[k]||(byCur[k]=[])).push(i)});multi=Object.keys(byCur).length>1}
   el.innerHTML='<div class="ig-head"><div class="ig-left"><span class="ig-type">'+lbl+'</span>'+
-    (!col.noEdit?'<span class="ig-count">'+cnt+'处</span>':'')+'</div><div class="ig-rows">'+rows+'</div></div>'+
+    (!col.noEdit?'<span class="ig-count">'+cnt+'处'+(!isCounted(first)?'(不统计)':'')+'</span>':'')+'</div><div class="ig-rows">'+rows+'</div></div>'+
     '<div class="ig-body"><div class="issue-reason">'+first.reason+'</div>'+
     (hasSug?'<div class="issue-vals"><span class="lbl">原文</span><span class="old-val">'+esc(first.current)+'</span><span class="arrow">→</span><span class="lbl">修订为</span><span class="new-val">'+(first.suggest===''?'null':esc(first.suggest))+'</span>'+(isMulti?'<span class="demo-badge">示例</span>':'')+'</div>'
            :'<div class="issue-vals"><span class="lbl">原文</span><span class="old-val">'+esc(first.current)+'</span>'+(isMulti?'<span class="demo-badge">示例</span>':'')+'</div>')+
-    (multi?'<div class="multi-wrap" style="display:none">'+Object.keys(byCur).map(cur=>{const sub=byCur[cur],subSug=sub[0].suggest;const done=sub.every(i=>i.resolved);return '<div class="multi-row'+(done?' dismissed':'')+'" data-norm="'+esc(cur)+'"><div class="m-head"><span class="m-cur">'+esc(sub[0].current)+(subSug?'<span class="m-arrow">→</span><span class="m-sug">'+esc(subSug)+'</span>':'')+'<span class="m-num">&ensp;'+sub.length+' 处</span></div><div class="m-actions"><button class="iact m-accept" data-mact="accept"><span>接受</span></button><input class="man-in-small" placeholder="统一为此值·回车确认"><button class="iact m-apply" data-mact="apply"><span>应用</span></button><button class="iact m-ignore" data-mact="ignore"><span>忽略</span></button></div></div>'}).join('')+'</div>':'')+
     '</div><div class="ig-actions">'+
-    (col.L==='Y'?
-      (cnt>1?'<button class="iact bulk-acc" data-act="bulk-accept" disabled><span>全部接受</span></button>':'<button class="iact" data-act="accept" disabled><span>接受</span></button>')+
-      '<button class="iact" data-act="yeditor"><span>手动修改</span></button>'+
-      '<button class="iact" data-act="ignore"><span>全部忽略</span></button>'
-      :(col.noEdit?'<button class="iact" data-act="ignore" style="min-width:auto"><span>忽略</span></button>'
-        :(multi?'<button class="iact bulk-acc" data-act="bulk-accept"'+(hasSug?'':'disabled')+'><span>全部接受</span></button><button class="iact reveal-manual" data-act="show-multi"><span>手动修改</span></button><button class="iact" data-act="ignore"><span>全部忽略</span></button>'
-               :(isMulti?'<button class="iact bulk-acc" data-act="bulk-accept"'+(hasSug?'':'disabled')+'><span>全部接受</span></button><button class="iact" data-act="manual"><span>手动修改</span></button><button class="iact" data-act="ignore"><span>全部忽略</span></button>'
-                        :'<button class="iact" data-act="accept"'+(hasSug?'':' disabled')+'><span>接受</span></button><button class="iact" data-act="manual"><span>手动修改</span></button><button class="iact" data-act="ignore"><span>忽略</span></button>'))))+
+    (col.noEdit?'<button class="iact" data-act="ignore" style="min-width:auto"><span>忽略</span></button>'
+      :(isMulti?'<button class="iact bulk-acc" data-act="bulk-accept"'+(hasSug?'':'disabled')+'><span>全部接受</span></button><button class="iact" data-act="yeditor"><span>手动修改</span></button><button class="iact" data-act="ignore"><span>全部忽略</span></button>'
+              :'<button class="iact" data-act="accept"'+(hasSug?'':' disabled')+'><span>接受</span></button><button class="iact" data-act="yeditor"><span>手动修改</span></button><button class="iact" data-act="ignore"><span>忽略</span></button>'))+
     '</div>'
   el.querySelectorAll('.iact').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();const act=btn.dataset.act;
-    if(act==='bulk-accept-all'){issues.filter(i=>!i.resolved&&i.suggest!=null).forEach(i=>{i.resolved='accept';i.value=i.suggest});el.classList.add('dismissed');updateCounts();return}
-    if(act==='bulk-ignore-all'){issues.filter(i=>!i.resolved).forEach(i=>{i.resolved='ignore'});el.classList.add('dismissed');updateCounts();return}
-    if(act==='show-multi'){const w=el.querySelector('.multi-wrap');if(w){w.style.display=w.style.display==='none'?'block':'none';return}}
     if(act==='yeditor'){renderYEditor(issues.filter(i=>!i.resolved));return}
-    const mr=btn.closest('.multi-row');if(mr){const norm=mr.dataset.norm;const sub=issues.filter(i=>normCur(i.current)+'\x00'+(i.suggest==null?'∅':normCur(i.suggest))===norm);const ma=btn.dataset.mact;
-      if(ma==='accept'){sub.filter(i=>!i.resolved&&i.suggest!=null).forEach(i=>{i.resolved='accept';i.value=i.suggest});mr.classList.add('dismissed')}
-      else if(ma==='ignore'){sub.filter(i=>!i.resolved).forEach(i=>{i.resolved='ignore'});mr.classList.add('dismissed')}
-      else if(ma==='apply'){const inp=mr.querySelector('.man-in-small');if(!inp||!inp.value.trim()){toast('未填值');return}const v=isNaN(Number(inp.value))?inp.value.trim():Number(inp.value);sub.filter(i=>!i.resolved).forEach(i=>{i.resolved='manual';i.value=v;i.manualVal=inp.value.trim()});mr.classList.add('dismissed')}
-      el.classList.toggle('dismissed',issues.every(i=>i.resolved));updateCounts();return}
     if(act==='bulk-accept'){issues.filter(i=>i.resolved!=='accept'&&i.resolved!=='ignore'&&i.suggest!=null).forEach(i=>{i.resolved='accept';i.value=i.suggest})}
     else if(act==='ignore'){issues.filter(i=>i.resolved!=='accept'&&i.resolved!=='ignore').forEach(i=>{i.resolved='ignore'})}
     else if(act==='accept'){issues.filter(i=>!i.resolved&&i.suggest!=null).forEach(i=>{i.resolved='accept';i.value=i.suggest})}
-    else if(act==='manual'){const body=el.querySelector('.ig-body .issue-vals');if(!body)return;const existing=body.querySelector('.man-in');if(existing){existing.focus();return}
-      const wrap=document.createElement('span');wrap.style.display='contents';wrap.innerHTML='<span class="arrow">→</span><span class="lbl">修订为</span><input class="man-in" placeholder="统一改为…">';body.appendChild(wrap)
-      const inp=wrap.querySelector('.man-in');inp.focus();const commit=()=>{const v=inp.value.trim();const nv=v===''?'':(isNaN(Number(v))?v:Number(v));issues.forEach(i=>{i.resolved='manual';i.value=nv;i.manualVal=v});el.classList.add('dismissed');wrap.remove();updateCounts()};inp.addEventListener('keydown',e=>{if(e.key==='Enter')commit();else if(e.key==='Escape')wrap.remove()});inp.addEventListener('blur',blurCommit);return}
-    el.classList.add('dismissed');updateCounts()}))
+el.classList.add('dismissed');updateCounts()}))
   return el}
-function typeLabel(t){const m={'missing':'数据缺失','dirty':'数据格式','whitespace':'空白字符','type':'格式','synonym':'同义词','unknown':'未知','case':'大小写','format':'格式','mismatch':'不一致','numstr':'文本数字','nonnum':'非数字','reverse':'倒序','formula':'公式','negtime':'负值','oaebase':'常数','residual':'残留','timealone':'不配套','dup':'重复','workshop':'车间','date-invalid':'日期无效','month-format':'月份格式','month-mismatch':'月份不符','sl+ul':'SL,UL冲突','sl→cat':'SL不匹配','ul→cat':'UL不匹配','sum≠hrs':'和≠班时','p≠sum':'时长≠分类和','nomap':'无映射','main-mismatch':'主类错','sub-mismatch':'次类错'};return m[t]||t}
-function updateCounts(){const a=S.issues.filter(i=>i.resolved==='accept').length,m=S.issues.filter(i=>i.resolved==='manual').length,ig=S.issues.filter(i=>i.resolved==='ignore').length
-  $('#cntDataRows').textContent=S.maxRow-S.dataStart+1;$('#cntTotal').textContent=S.issues.length;$('#cntAccept').textContent=a;$('#cntManual').textContent=m;$('#cntIgnore').textContent=ig;$('#cntPending').textContent=S.issues.length-a-m-ig;$('#exportBtn').style.opacity='1';$('#exportBtn').disabled=false;const gb=$('#gapBtn');if(gb){gb.style.opacity='1';gb.disabled=false}const nm=$('#newName');if(nm)nm.textContent=S.fileName.replace(/\.xlsx?m?$/,'')+'-Check.'+S.srcExt;const om=$('#origName');if(om)om.textContent=S.fileName}
+function typeLabel(t){const m={'missing':'数据缺失','unexpected':'多余产品','dirty':'数据格式','whitespace':'空白字符','type':'格式','synonym':'同义词','unknown':'未知','case':'大小写','format':'格式','mismatch':'不一致','numstr':'文本数字','nonnum':'非数字','reverse':'倒序','formula':'公式','negtime':'负值','oaebase':'常数','residual':'残留','timealone':'不配套','dup':'重复','workshop':'车间','date-invalid':'日期无效','month-format':'月份格式','month-mismatch':'月份不符','sl+ul':'SL,UL冲突','sl→cat':'SL不匹配','ul→cat':'UL不匹配','sum≠24':'日和≠24h','nomap':'无映射','main-mismatch':'主类错','sub-mismatch':'次类错'};return m[t]||t}
+function updateCounts(){const ci=S.issues.filter(isCounted);const a=ci.filter(i=>i.resolved==='accept').length,m=ci.filter(i=>i.resolved==='manual').length,ig=ci.filter(i=>i.resolved==='ignore').length
+  $('#cntDataRows').textContent=S.maxRow-S.dataStart+1;$('#cntTotal').textContent=ci.length;$('#cntAccept').textContent=a;$('#cntManual').textContent=m;$('#cntIgnore').textContent=ig;$('#cntPending').textContent=ci.length-a-m-ig;$('#exportBtn').style.opacity='1';$('#exportBtn').disabled=false;const gb=$('#gapBtn');if(gb){gb.style.opacity='1';gb.disabled=false}const nm=$('#newName');if(nm)nm.textContent=S.fileName.replace(/\.xlsx?m?$/,'')+'-Check.'+S.srcExt;const om=$('#origName');if(om)om.textContent=S.fileName}
 function openExport(){$('#exportModal').classList.add('open');$('#exportModal').setAttribute('aria-hidden','false')}
 function closeExport(){$('#exportModal').classList.remove('open');$('#exportModal').setAttribute('aria-hidden','true')}
 const NUMERIC_COLS=new Set(['J','K','L','M','P','U','V','W','X']);
-function escapeXml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function escapeXml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function applyMod(addr,attrs,content,col,value){
   const stripT=()=>attrs.replace(/\s*t="[^"]*"/g,'');
   if(content.includes('<f')){
@@ -452,7 +432,6 @@ async function generateGAP(){
     const timeStamp=formatTimeStamp(new Date());
     let count=0;
     /* setXmlCell: replace cell value in sheet XML while preserving style (s attribute) */
-    function escXml(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
     function setXmlCell(xml,addr,val,isNum){
       const re=new RegExp('<c r="'+addr+'"([^>]*)/>|<c r="'+addr+'"([^>]*)>.*?</c>','g');
       const m=re.exec(xml);
@@ -466,7 +445,7 @@ async function generateGAP(){
       }else if(isNum){
         rep='<c r="'+addr+'"'+sAttr+'><v>'+val+'</v></c>';
       }else{
-        rep='<c r="'+addr+'"'+sAttr+' t="inlineStr"><is><t>'+escXml(val)+'</t></is></c>';
+        rep='<c r="'+addr+'"'+sAttr+' t="inlineStr"><is><t>'+escapeXml(val)+'</t></is></c>';
       }
       return xml.substring(0,m.index)+rep+xml.substring(m.index+m[0].length);
     }
