@@ -1,5 +1,5 @@
 /* ===================================================================
-   AE数据检查 — AE详细编辑器
+   AE数据分析 — AE详细编辑器
    Y列：全行上下文 + U/V/W/X/Y/Z/AA 联动编辑
    其他列：简化编辑（单输入框 + 批量修改）
    =================================================================== */
@@ -30,8 +30,9 @@ function renderSimpleEditor(issues,col){
     const mergedF=S.dict.mergedF.has(r)?function(){var ws2=S.ws;if(!ws2['!merges'])return null;for(var mi=0;mi<ws2['!merges'].length;mi++){var m=ws2['!merges'][mi];if(m.s.c===5&&m.e.c===5&&m.s.r<=r-1&&r-1<=m.e.r){var cell=ws2['F'+(m.s.r+1)];return cell&&cell.v!=null?String(cell.v):null;}}return null;}():null;
     const I=r2s(ws,'I',r)||'';
     const AF=(A||'')+((F||mergedF)?' '+(F||mergedF):'');
-    const cur=r2s(ws,col,r);
-    return{r,AF,C,D:DH(D,r),I,cur:cur!=null?String(cur):''};
+    const curRaw=r2s(ws,col,r);
+    const cur=(function(){if(col==='C'){const cv=r2v(ws,'C',r);if(cv instanceof Date)return esc(cv);if(typeof cv==='number')return serialToDate(cv).toLocaleDateString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit'});}return curRaw!=null?String(curRaw):'';})();
+    return{r,AF,C,D:DH(D,r),I,cur};
   }
   function DH(D,r){return(D||'')+(S.shiftHours.get(r)?'('+S.shiftHours.get(r)+'H)':'');}
 

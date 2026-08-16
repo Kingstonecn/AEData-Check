@@ -1,8 +1,15 @@
 /* ===================================================================
-   AE数据检查 — app.js v2.0
+   AE数据分析 — app.js v2.0
    纯前端、本地处理。保留公式，分组展示、批量处理、导出新簿+CSV。
    =================================================================== */
 'use strict';
+// Auto-generated style template for GAP file generation
+// Contains correct styles.xml, theme1.xml, and style index mapping
+var GAP_STYLE_MAP={"0": 0, "2": 0, "4": 2, "5": 2, "6": 9, "7": 36, "8": 33, "9": 35, "10": 31, "11": 31, "12": 37, "13": 38, "14": 39, "21": 1, "22": 2, "23": 4, "24": 5, "25": 12, "26": 9, "27": 4, "28": 5, "29": 2, "30": 19, "31": 19, "32": 21, "33": 22, "34": 21, "35": 1, "36": 27, "37": 28, "38": 29, "50": 1, "51": 4, "52": 42, "53": 35, "54": 0, "55": 45, "56": 46, "57": 46, "58": 48, "59": 49, "60": 50, "61": 51, "62": 52, "63": 52, "64": 48, "65": 55, "66": 56, "67": 6, "68": 6, "69": 6, "70": 1, "71": 6, "72": 6, "73": 6, "74": 24, "75": 1, "76": 34, "225": 1, "340": 1, "390": 1};
+var GAP_COL_STYLE_MAP={"6":10,"35":26,"54":44};
+var GAP_STYLES="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n\n<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" mc:Ignorable=\"x14ac x16r2 xr\" xmlns:x14ac=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac\" xmlns:x16r2=\"http://schemas.microsoft.com/office/spreadsheetml/2015/02/main\" xmlns:xr=\"http://schemas.microsoft.com/office/spreadsheetml/2014/revision\"><numFmts count=\"4\"><numFmt numFmtId=\"164\" formatCode=\"dd\\.mm\\.yyyy\\ hh:mm\"/><numFmt numFmtId=\"165\" formatCode=\"[hh]:mm\"/><numFmt numFmtId=\"166\" formatCode=\"#,##0.000\"/><numFmt numFmtId=\"167\" formatCode=\"yyyy/m/d\\ h:mm:ss\"/></numFmts><fonts count=\"6\" x14ac:knownFonts=\"1\"><font><sz val=\"10\"/><color theme=\"1\"/><name val=\"Arial\"/><family val=\"2\"/></font><font><sz val=\"11\"/><color theme=\"1\"/><name val=\"Aptos Narrow\"/><family val=\"2\"/><scheme val=\"minor\"/></font><font><b/><sz val=\"8\"/><name val=\"Arial\"/><family val=\"2\"/></font><font><sz val=\"8\"/><name val=\"Arial\"/><family val=\"2\"/></font><font><sz val=\"10\"/><name val=\"Arial\"/><family val=\"2\"/></font><font><sz val=\"11\"/><name val=\"Calibri\"/><family val=\"2\"/></font></fonts><fills count=\"7\"><fill><patternFill patternType=\"none\"/></fill><fill><patternFill patternType=\"gray125\"/></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FFFFFFCC\"/></patternFill></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FFF9C658\" tint=\"-0.14999847407452621\"/><bgColor indexed=\"64\"/></patternFill></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FFE78F8E\" tint=\"-0.14999847407452621\"/><bgColor indexed=\"64\"/></patternFill></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FF96C593\" tint=\"-0.14999847407452621\"/><bgColor indexed=\"64\"/></patternFill></fill><fill><patternFill patternType=\"solid\"><fgColor rgb=\"FFDDEBF7\"/></patternFill></fill></fills><borders count=\"2\"><border><left/><right/><top/><bottom/><diagonal/></border><border><left style=\"hair\"><color auto=\"1\"/></left><right style=\"hair\"><color auto=\"1\"/></right><top style=\"hair\"><color auto=\"1\"/></top><bottom style=\"hair\"><color auto=\"1\"/></bottom><diagonal/></border></borders><cellStyleXfs count=\"3\"><xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\"/><xf numFmtId=\"0\" fontId=\"1\" fillId=\"0\" borderId=\"0\"/><xf numFmtId=\"0\" fontId=\"5\" fillId=\"0\" borderId=\"0\"/></cellStyleXfs><cellXfs count=\"58\"><xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\"/><xf numFmtId=\"0\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyFont=\"1\"/><xf numFmtId=\"0\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"3\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"4\" fontId=\"3\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"164\" fontId=\"3\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"3\" fillId=\"3\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"3\" fillId=\"4\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"3\" fillId=\"5\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyProtection=\"1\"><protection locked=\"0\"/></xf><xf numFmtId=\"0\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyFont=\"1\" applyProtection=\"1\"><protection locked=\"0\"/></xf><xf numFmtId=\"0\" fontId=\"3\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyFont=\"1\"/><xf numFmtId=\"49\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment horizontal=\"left\" wrapText=\"1\"/></xf><xf numFmtId=\"4\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"164\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"2\" fillId=\"3\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"2\" fillId=\"4\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"2\" fillId=\"5\" borderId=\"0\" xfId=\"1\" applyFont=\"1\" applyFill=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"49\" fontId=\"4\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"49\" fontId=\"4\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"4\" fontId=\"4\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"22\" fontId=\"4\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"4\" fontId=\"4\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"0\" fontId=\"4\" fillId=\"2\" borderId=\"1\" xfId=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"0\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"1\" applyFont=\"1\"/><xf numFmtId=\"0\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyFont=\"1\"/><xf numFmtId=\"49\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"4\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\"/><xf numFmtId=\"22\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\"/><xf numFmtId=\"0\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"4\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"0\" fontId=\"4\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"164\" fontId=\"4\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"165\" fontId=\"4\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"4\" fontId=\"4\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"0\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyFont=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"164\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"165\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"4\" fontId=\"4\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"0\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyFont=\"1\"/><xf numFmtId=\"4\" fontId=\"2\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"4\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyProtection=\"1\"><protection locked=\"0\"/></xf><xf numFmtId=\"4\" fontId=\"4\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\" applyProtection=\"1\"><alignment wrapText=\"1\"/><protection locked=\"0\"/></xf><xf numFmtId=\"0\" fontId=\"5\" fillId=\"0\" borderId=\"0\" xfId=\"2\"/><xf numFmtId=\"1\" fontId=\"5\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"49\" fontId=\"5\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"49\" fontId=\"5\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"166\" fontId=\"5\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"1\" fontId=\"5\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\"/><xf numFmtId=\"49\" fontId=\"5\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\"/><xf numFmtId=\"166\" fontId=\"5\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyNumberFormat=\"1\"/><xf numFmtId=\"0\" fontId=\"5\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"0\" fontId=\"5\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyFill=\"1\" applyBorder=\"1\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"166\" fontId=\"5\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"0\" fontId=\"5\" fillId=\"2\" borderId=\"1\" xfId=\"2\" applyFill=\"1\" applyBorder=\"1\"/><xf numFmtId=\"0\" fontId=\"5\" fillId=\"0\" borderId=\"0\" xfId=\"2\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf><xf numFmtId=\"167\" fontId=\"4\" fillId=\"6\" borderId=\"1\" xfId=\"2\" applyNumberFormat=\"1\" applyFont=\"1\" applyFill=\"1\" applyBorder=\"1\"/></cellXfs><cellStyles count=\"3\"><cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/><cellStyle name=\"Normal 2\" xfId=\"1\" xr:uid=\"{AB88A397-1CE0-4571-8A90-C72EC8921B06}\"/><cellStyle name=\"Normal 2 2\" xfId=\"2\" xr:uid=\"{7C7A46E6-CFFC-4F0C-AB97-7C1D4D96A85F}\"/></cellStyles><dxfs count=\"9\"><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFFFC7CE\"/></patternFill></fill></dxf><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFDDEBF7\"/></patternFill></fill></dxf><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFFFC7CE\"/></patternFill></fill></dxf><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFDDEBF7\"/></patternFill></fill></dxf><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFDDEBF7\"/></patternFill></fill></dxf><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFFFC7CE\"/></patternFill></fill></dxf><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFFFC7CE\"/></patternFill></fill></dxf><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFFFC7CE\"/></patternFill></fill></dxf><dxf><fill><patternFill patternType=\"solid\"><bgColor rgb=\"FFFFC7CE\"/></patternFill></fill></dxf></dxfs><tableStyles count=\"0\" defaultTableStyle=\"TableStyleMedium2\" defaultPivotStyle=\"PivotStyleLight16\"/><extLst><ext uri=\"{EB79DEF2-80B8-43e5-95BD-54CBDDF9020C}\" xmlns:x14=\"http://schemas.microsoft.com/office/spreadsheetml/2009/9/main\"><x14:slicerStyles defaultSlicerStyle=\"SlicerStyleLight1\"/></ext><ext uri=\"{9260A510-F301-46a8-8635-F512D64BE5F5}\" xmlns:x15=\"http://schemas.microsoft.com/office/spreadsheetml/2010/11/main\"><x15:timelineStyles defaultTimelineStyle=\"TimeSlicerStyleLight1\"/></ext></extLst></styleSheet>";
+var GAP_THEME="<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n\n<a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"Office Theme\"><a:themeElements><a:clrScheme name=\"Office\"><a:dk1><a:sysClr val=\"windowText\" lastClr=\"000000\"/></a:dk1><a:lt1><a:sysClr val=\"window\" lastClr=\"FFFFFF\"/></a:lt1><a:dk2><a:srgbClr val=\"0E2841\"/></a:dk2><a:lt2><a:srgbClr val=\"E8E8E8\"/></a:lt2><a:accent1><a:srgbClr val=\"156082\"/></a:accent1><a:accent2><a:srgbClr val=\"E97132\"/></a:accent2><a:accent3><a:srgbClr val=\"196B24\"/></a:accent3><a:accent4><a:srgbClr val=\"0F9ED5\"/></a:accent4><a:accent5><a:srgbClr val=\"A02B93\"/></a:accent5><a:accent6><a:srgbClr val=\"4EA72E\"/></a:accent6><a:hlink><a:srgbClr val=\"467886\"/></a:hlink><a:folHlink><a:srgbClr val=\"96607D\"/></a:folHlink></a:clrScheme><a:fontScheme name=\"Office\"><a:majorFont><a:latin typeface=\"Aptos Display\" panose=\"02110004020202020204\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/><a:font script=\"Jpan\" typeface=\"\u6e38\u30b4\u30b7\u30c3\u30af Light\"/><a:font script=\"Hang\" typeface=\"\ub9d1\uc740 \uace0\ub515\"/><a:font script=\"Hans\" typeface=\"\u7b49\u7ebf Light\"/><a:font script=\"Hant\" typeface=\"\u65b0\u7d30\u660e\u9ad4\"/><a:font script=\"Arab\" typeface=\"Times New Roman\"/><a:font script=\"Hebr\" typeface=\"Times New Roman\"/><a:font script=\"Thai\" typeface=\"Tahoma\"/><a:font script=\"Ethi\" typeface=\"Nyala\"/><a:font script=\"Beng\" typeface=\"Vrinda\"/><a:font script=\"Gujr\" typeface=\"Shruti\"/><a:font script=\"Khmr\" typeface=\"MoolBoran\"/><a:font script=\"Knda\" typeface=\"Tunga\"/><a:font script=\"Guru\" typeface=\"Raavi\"/><a:font script=\"Cans\" typeface=\"Euphemia\"/><a:font script=\"Cher\" typeface=\"Plantagenet Cherokee\"/><a:font script=\"Yiii\" typeface=\"Microsoft Yi Baiti\"/><a:font script=\"Tibt\" typeface=\"Microsoft Himalaya\"/><a:font script=\"Thaa\" typeface=\"MV Boli\"/><a:font script=\"Deva\" typeface=\"Mangal\"/><a:font script=\"Telu\" typeface=\"Gautami\"/><a:font script=\"Taml\" typeface=\"Latha\"/><a:font script=\"Syrc\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Orya\" typeface=\"Kalinga\"/><a:font script=\"Mlym\" typeface=\"Kartika\"/><a:font script=\"Laoo\" typeface=\"DokChampa\"/><a:font script=\"Sinh\" typeface=\"Iskoola Pota\"/><a:font script=\"Mong\" typeface=\"Mongolian Baiti\"/><a:font script=\"Viet\" typeface=\"Times New Roman\"/><a:font script=\"Uigh\" typeface=\"Microsoft Uighur\"/><a:font script=\"Geor\" typeface=\"Sylfaen\"/><a:font script=\"Armn\" typeface=\"Arial\"/><a:font script=\"Bugi\" typeface=\"Leelawadee UI\"/><a:font script=\"Bopo\" typeface=\"Microsoft JhengHei\"/><a:font script=\"Java\" typeface=\"Javanese Text\"/><a:font script=\"Lisu\" typeface=\"Segoe UI\"/><a:font script=\"Mymr\" typeface=\"Myanmar Text\"/><a:font script=\"Nkoo\" typeface=\"Ebrima\"/><a:font script=\"Olck\" typeface=\"Nirmala UI\"/><a:font script=\"Osma\" typeface=\"Ebrima\"/><a:font script=\"Phag\" typeface=\"Phagspa\"/><a:font script=\"Syrn\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Syrj\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Syre\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Sora\" typeface=\"Nirmala UI\"/><a:font script=\"Tale\" typeface=\"Microsoft Tai Le\"/><a:font script=\"Talu\" typeface=\"Microsoft New Tai Lue\"/><a:font script=\"Tfng\" typeface=\"Ebrima\"/></a:majorFont><a:minorFont><a:latin typeface=\"Aptos Narrow\" panose=\"02110004020202020204\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/><a:font script=\"Jpan\" typeface=\"\u6e38\u30b4\u30b7\u30c3\u30af\"/><a:font script=\"Hang\" typeface=\"\ub9d1\uc740 \uace0\ub515\"/><a:font script=\"Hans\" typeface=\"\u7b49\u7ebf\"/><a:font script=\"Hant\" typeface=\"\u65b0\u7d30\u660e\u9ad4\"/><a:font script=\"Arab\" typeface=\"Arial\"/><a:font script=\"Hebr\" typeface=\"Arial\"/><a:font script=\"Thai\" typeface=\"Tahoma\"/><a:font script=\"Ethi\" typeface=\"Nyala\"/><a:font script=\"Beng\" typeface=\"Vrinda\"/><a:font script=\"Gujr\" typeface=\"Shruti\"/><a:font script=\"Khmr\" typeface=\"DaunPenh\"/><a:font script=\"Knda\" typeface=\"Tunga\"/><a:font script=\"Guru\" typeface=\"Raavi\"/><a:font script=\"Cans\" typeface=\"Euphemia\"/><a:font script=\"Cher\" typeface=\"Plantagenet Cherokee\"/><a:font script=\"Yiii\" typeface=\"Microsoft Yi Baiti\"/><a:font script=\"Tibt\" typeface=\"Microsoft Himalaya\"/><a:font script=\"Thaa\" typeface=\"MV Boli\"/><a:font script=\"Deva\" typeface=\"Mangal\"/><a:font script=\"Telu\" typeface=\"Gautami\"/><a:font script=\"Taml\" typeface=\"Latha\"/><a:font script=\"Syrc\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Orya\" typeface=\"Kalinga\"/><a:font script=\"Mlym\" typeface=\"Kartika\"/><a:font script=\"Laoo\" typeface=\"DokChampa\"/><a:font script=\"Sinh\" typeface=\"Iskoola Pota\"/><a:font script=\"Mong\" typeface=\"Mongolian Baiti\"/><a:font script=\"Viet\" typeface=\"Arial\"/><a:font script=\"Uigh\" typeface=\"Microsoft Uighur\"/><a:font script=\"Geor\" typeface=\"Sylfaen\"/><a:font script=\"Armn\" typeface=\"Arial\"/><a:font script=\"Bugi\" typeface=\"Leelawadee UI\"/><a:font script=\"Bopo\" typeface=\"Microsoft JhengHei\"/><a:font script=\"Java\" typeface=\"Javanese Text\"/><a:font script=\"Lisu\" typeface=\"Segoe UI\"/><a:font script=\"Mymr\" typeface=\"Myanmar Text\"/><a:font script=\"Nkoo\" typeface=\"Ebrima\"/><a:font script=\"Olck\" typeface=\"Nirmala UI\"/><a:font script=\"Osma\" typeface=\"Ebrima\"/><a:font script=\"Phag\" typeface=\"Phagspa\"/><a:font script=\"Syrn\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Syrj\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Syre\" typeface=\"Estrangelo Edessa\"/><a:font script=\"Sora\" typeface=\"Nirmala UI\"/><a:font script=\"Tale\" typeface=\"Microsoft Tai Le\"/><a:font script=\"Talu\" typeface=\"Microsoft New Tai Lue\"/><a:font script=\"Tfng\" typeface=\"Ebrima\"/></a:minorFont></a:fontScheme><a:fmtScheme name=\"Office\"><a:fillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:lumMod val=\"110000\"/><a:satMod val=\"105000\"/><a:tint val=\"67000\"/></a:schemeClr></a:gs><a:gs pos=\"50000\"><a:schemeClr val=\"phClr\"><a:lumMod val=\"105000\"/><a:satMod val=\"103000\"/><a:tint val=\"73000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:lumMod val=\"105000\"/><a:satMod val=\"109000\"/><a:tint val=\"81000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"5400000\" scaled=\"0\"/></a:gradFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:satMod val=\"103000\"/><a:lumMod val=\"102000\"/><a:tint val=\"94000\"/></a:schemeClr></a:gs><a:gs pos=\"50000\"><a:schemeClr val=\"phClr\"><a:satMod val=\"110000\"/><a:lumMod val=\"100000\"/><a:shade val=\"100000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:lumMod val=\"99000\"/><a:satMod val=\"120000\"/><a:shade val=\"78000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"5400000\" scaled=\"0\"/></a:gradFill></a:fillStyleLst><a:lnStyleLst><a:ln w=\"12700\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/><a:miter lim=\"800000\"/></a:ln><a:ln w=\"19050\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/><a:miter lim=\"800000\"/></a:ln><a:ln w=\"25400\" cap=\"flat\" cmpd=\"sng\" algn=\"ctr\"><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:prstDash val=\"solid\"/><a:miter lim=\"800000\"/></a:ln></a:lnStyleLst><a:effectStyleLst><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst/></a:effectStyle><a:effectStyle><a:effectLst><a:outerShdw blurRad=\"57150\" dist=\"19050\" dir=\"5400000\" algn=\"ctr\" rotWithShape=\"0\"><a:srgbClr val=\"000000\"><a:alpha val=\"63000\"/></a:srgbClr></a:outerShdw></a:effectLst></a:effectStyle></a:effectStyleLst><a:bgFillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:solidFill><a:schemeClr val=\"phClr\"><a:tint val=\"95000\"/><a:satMod val=\"170000\"/></a:schemeClr></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\"><a:tint val=\"93000\"/><a:satMod val=\"150000\"/><a:shade val=\"98000\"/><a:lumMod val=\"102000\"/></a:schemeClr></a:gs><a:gs pos=\"50000\"><a:schemeClr val=\"phClr\"><a:tint val=\"98000\"/><a:satMod val=\"130000\"/><a:shade val=\"90000\"/><a:lumMod val=\"103000\"/></a:schemeClr></a:gs><a:gs pos=\"100000\"><a:schemeClr val=\"phClr\"><a:shade val=\"63000\"/><a:satMod val=\"120000\"/></a:schemeClr></a:gs></a:gsLst><a:lin ang=\"5400000\" scaled=\"0\"/></a:gradFill></a:bgFillStyleLst></a:fmtScheme></a:themeElements><a:objectDefaults><a:lnDef><a:spPr/><a:bodyPr/><a:lstStyle/><a:style><a:lnRef idx=\"2\"><a:schemeClr val=\"accent1\"/></a:lnRef><a:fillRef idx=\"0\"><a:schemeClr val=\"accent1\"/></a:fillRef><a:effectRef idx=\"1\"><a:schemeClr val=\"accent1\"/></a:effectRef><a:fontRef idx=\"minor\"><a:schemeClr val=\"tx1\"/></a:fontRef></a:style></a:lnDef></a:objectDefaults><a:extraClrSchemeLst/><a:extLst><a:ext uri=\"{05A4C25C-085E-4340-85A3-A5531E510DB2}\"><thm15:themeFamily xmlns:thm15=\"http://schemas.microsoft.com/office/thememl/2012/main\" name=\"Office Theme\" id=\"{2E142A2C-CD16-42D6-873A-C26D2A0506FA}\" vid=\"{1BDDFF52-6CD6-40A5-AB3C-68EB2F1E4D0A}\"/></a:ext></a:extLst></a:theme>";
+
 let COLS=[
 {L:'A',type:'skip'},{L:'B',type:'skip'},{L:'C',type:'skip'},{L:'D',type:'shift'},{L:'E',type:'text'},
 {L:'F',type:'line'},{L:'G',type:'status'},{L:'H',type:'product'},{L:'I',type:'asset'},
@@ -19,7 +26,10 @@ const vis=(s)=>String(s==null?'':s).replace(/ /g,'␣').replace(/　/g,'␣');
 const $=(s,r=document)=>r.querySelector(s);const $$=(s,r=document)=>[...r.querySelectorAll(s)];
 function esc(v){if(v==null)return'␣';if(typeof v=='string')return v;if(v instanceof Date)return v.toLocaleString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit'});return String(v)}
 function escAA(v){return v==null||v===''?'␣':String(v)}
+function escXml(v){return String(v==null?'':v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;')}
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2200)}
+function yieldUI(){return new Promise(r=>requestAnimationFrame(()=>setTimeout(r,0)))}
+async function _step(msg,fn){toast(msg);await yieldUI();const t0=performance.now();fn();const elapsed=performance.now()-t0;if(elapsed<200)await new Promise(r=>setTimeout(r,200-elapsed))}
 function serialToDate(n){const wd=Math.floor(n),frac=n-wd;return new Date(1899,11,30+(n<60?wd+1:wd),0,0,0,Math.round(frac*86400000))}
 const S={wb:null,ws:null,fileName:'资产数据(GAP).xlsx',srcExt:'xlsx',dataStart:3,maxRow:0,catMap:{},origBuf:null,
   dict:{product:new Set(),asset:new Map(),individual:new Set(),mergedF:new Set(),mergedA:new Set(),mergedMap:{}},
@@ -31,11 +41,18 @@ function initLoad(){const dz=$('#dropzone'),fi=$('#fileInput');
   ['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('drag')}));
   ['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('drag')}));
   dz.addEventListener('drop',e=>{if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0])});
-  $('#todayStamp').textContent='版本时间：2026.07.13'}
-async function handleFile(file){try{const buf=await file.arrayBuffer();S.origBuf=buf.slice(0);toast('正在解析…');const wb=XLSX.read(buf,{type:'array',cellFormula:true,cellNF:true});
+  $('#todayStamp').textContent='版本时间：2026.07.27'}
+async function handleFile(file){try{
+  toast('正在解析 '+file.name+'…');await yieldUI();const t0=performance.now();
+  const buf=await file.arrayBuffer();S.origBuf=buf.slice(0);const wb=XLSX.read(buf,{type:'array',cellFormula:true,cellNF:true});
+  const parseElapsed=performance.now()-t0;if(parseElapsed<200)await new Promise(r=>setTimeout(r,200-parseElapsed));
   if(!wb.SheetNames.includes('AE Data')){toast('未找到 AE Data 工作表');return}
   S.wb=wb;S.ws=wb.Sheets['AE Data'];S.fileName=file.name;S.srcExt=/\.xlsm?$/i.test(file.name)?'xlsm':(/\.xlsx$/i.test(file.name)?'xlsx':'xls');
-  readHeaders();buildDicts();detectShiftHours();detectMergedCells();S.issues=scanAll();showReview();toast('已载入：共 '+S.issues.filter(isCounted).length+' 处疑误')
+  await _step('正在读取表头…',readHeaders);
+  await _step('正在构建字典…',buildDicts);
+  await _step('正在检测合并单元格…',()=>{detectMergedCells();detectShiftHours()});
+  await _step('正在扫描疑误…',()=>{S.issues=scanAll()});
+  showReview();toast('已载入 '+file.name+'：共 '+S.issues.filter(isCounted).length+' 处疑误')
 }catch(err){console.error(err);toast('载入失败：'+err.message)}}
 function readHeaders(){const ws=S.ws;const r1=[],r2=[];
   for(let i=0;i<28;i++){r1[i]=ws[XLSX.utils.encode_cell({r:0,c:i})]?.v;r2[i]=ws[XLSX.utils.encode_cell({r:1,c:i})]?.v}
@@ -49,8 +66,8 @@ function buildDicts(){const wb=S.wb,d=S.dict;
   if(wb.SheetNames.includes('Category')){d.individual=new Set();S.catMap={};
     XLSX.utils.sheet_to_json(wb.Sheets['Category'],{header:1,raw:1}).forEach((r,i)=>{if(!i)return;const ind=r[3]?String(r[3]).trim():null;if(ind){d.individual.add(ind);S.catMap[ind]={main:r[4]?String(r[4]).trim():'',sub:r[5]?String(r[5]).trim():''}}})}}
 function detectShiftHours(){const ws=S.ws,max=getMaxRow();S.maxRow=max;const ghm=new Map();
-  for(let r=S.dataStart;r<=max;r++){const l=r2s(ws,'F',r),s=r2s(ws,'D',r),d=r2s(ws,'C',r);if(l&&s&&s.includes('中班'))ghm.set(d+'|'+l,1)}
-  for(let r=S.dataStart;r<=max;r++){const l=r2s(ws,'F',r),d=r2s(ws,'C',r);S.shiftHours.set(r,ghm.get(d+'|'+l)?8:12)}}
+  for(let r=S.dataStart;r<=max;r++){const l=getMergedVal(ws,'F',r),s=getMergedVal(ws,'D',r),dv=r2v(ws,'C',r),w=getMergedVal(ws,'A',r);if(s&&String(s).includes('中班')){var dk=dv instanceof Date?(dv.getTime()-Date.UTC(1899,11,30))/86400000:dv;if(l)ghm.set(dk+'|'+w+'|'+l,1);ghm.set(dk+'|'+w,1)}}
+  for(let r=S.dataStart;r<=max;r++){const l=getMergedVal(ws,'F',r),dv=r2v(ws,'C',r),w=getMergedVal(ws,'A',r);var dk=dv instanceof Date?(dv.getTime()-Date.UTC(1899,11,30))/86400000:dv;S.shiftHours.set(r,(l&&ghm.get(dk+'|'+w+'|'+l))||ghm.get(dk+'|'+w)?8:12)}}
 function detectMergedCells(){const ws=S.ws;S.dict.mergedF=new Set();S.dict.mergedA=new Set();S.dict.mergedMap={};if(!ws['!merges'])return;ws['!merges'].forEach(mr=>{if(mr.s.c===mr.e.c){const col=XLSX.utils.encode_col(mr.s.c);if(!S.dict.mergedMap[col])S.dict.mergedMap[col]={};for(let r=mr.s.r;r<=mr.e.r;r++){const row=r+1;S.dict.mergedMap[col][row]=mr.s.r+1;if(col==='F')S.dict.mergedF.add(row);if(col==='A')S.dict.mergedA.add(row)}}})}
 function getMergedVal(ws,col,row){const v=r2s(ws,col,row);if(v!=null&&v!=='')return v;const mm=S.dict.mergedMap[col];if(mm&&mm[row]){return r2s(ws,col,mm[row])}return v}
 function getMaxRow(){const ref=S.ws['!ref'];if(!ref)return 0;const m=ref.match(/A\d+:(\w+?)(\d+)/);return m?parseInt(m[2]):0}
@@ -185,24 +202,29 @@ function scanAll(){const ws=S.ws,max=S.maxRow,issues=[];let id=0;const daySum={}
     else if(slv>0&&yv!=='SL')push1(r,'Y','sl→cat','存在SL损失时间但主AE分类≠SL',yv||'(空)','SL')
     else if(ulv>0&&yv!=='UL')push1(r,'Y','ul→cat','存在UL损失时间但主AE分类≠UL',yv||'(空)','UL')
     const uvc=r2n(ws,'U',r);
-    if(uvc>0||slv>0||ulv>0||box>0){const dayKey=r2s(ws,'A',r)+'|'+r2s(ws,'I',r)+'|'+r2s(ws,'C',r);if(!daySum[dayKey])daySum[dayKey]={rows:[],total:0};daySum[dayKey].rows.push(r);daySum[dayKey].total+=uvc+slv+ulv+box}
+    if(uvc>0||slv>0||ulv>0||box>0){const dayKey=getMergedVal(ws,'A',r)+'|'+getMergedVal(ws,'I',r)+'|'+r2s(ws,'C',r);if(!daySum[dayKey])daySum[dayKey]={rows:[],total:0};daySum[dayKey].rows.push(r);daySum[dayKey].total+=uvc+slv+ulv+box}
     if(aav!=null&&aav!==''){const ind=String(aav).trim();const cat=S.catMap[ind];if(!cat)push1(r,'Y','nomap','AE分类不在Category字典',vis(ind),'-');else{const zv2=r2s(ws,'Z',r);if(yv!==null&&yv!==''&&cat.main&&yv!==cat.main)push1(r,'Y','main-mismatch','主AE分类应为「'+cat.main+'」',yv,cat.main);if(zv2!==null&&zv2!==''&&cat.sub&&zv2!==cat.sub)push1(r,'Y','sub-mismatch','次AE分类应为「'+cat.sub+'」',zv2,cat.sub)}}
   }
-  Object.keys(daySum).forEach(k=>{const d=daySum[k];if(Math.abs(d.total-24)>0.05)push1(d.rows[0],'Y','sum≠24','同日OAE+SL+UL+BO='+d.total+'≠24h（行#'+d.rows.join(',')+'）',d.total,'-')});
+  Object.keys(daySum).forEach(function(k){const d=daySum[k];if(Math.abs(d.total-24)>0.05)push1(d.rows[0],'Y','sum≠24','同日OAE+SL+UL+BO='+d.total+'≠24h（行#'+d.rows.join(',')+'）',d.total,'-');if(d.total>30){var cv=r2v(ws,'C',d.rows[0]);var cs=cv instanceof Date?esc(cv):typeof cv==='number'?serialToDate(cv).toLocaleDateString('zh-CN',{year:'numeric',month:'2-digit',day:'2-digit'}):String(cv);push1(d.rows[0],'C','date-suspect','单日总时间超24h，可能存在重复班次或日期错误',cs,'-')}});
   return issues}
 /* 渲染 */
 function getIssueMonth(i){const ws=S.ws;const bv=r2v(ws,'B',i.row);if(bv!=null){const s=String(bv).trim();if(/^\d{2}年\d{2}月$/.test(s))return s}const cv=r2v(ws,'C',i.row);const m=fmtMonthFromDate(cv);return m}
 function getFilteredIssues(){if(!S.filterYear&&!S.filterMonth)return S.issues;return S.issues.filter(i=>{const m=getIssueMonth(i);if(!m)return false;if(S.filterYear&&!m.startsWith(S.filterYear+'年'))return false;if(S.filterMonth&&!m.endsWith(S.filterMonth+'月'))return false;return true})}
 function initDateFilter(){const years=new Set(),months=new Set();S.issues.forEach(i=>{const m=getIssueMonth(i);if(!m)return;const ym=m.match(/^(\d{2})年(\d{2})月$/);if(ym){years.add(ym[1]);months.add(ym[2])}});const ys=$('#filterYear'),ms=$('#filterMonth');ys.innerHTML='<option value="">全部年份</option>';[...years].sort().forEach(y=>ys.innerHTML+='<option value="'+y+'">20'+y+'年</option>');ms.innerHTML='<option value="">全部月份</option>';[...months].sort().forEach(mo=>ms.innerHTML+='<option value="'+mo+'">'+parseInt(mo)+'月</option>');S.filterYear=null;S.filterMonth=null;ys.value='';ms.value=''}
-function showReview(){$('#stage-load').classList.remove('active');$('#stage-review').classList.add('active');initDateFilter();renderChart('ws-line');renderTabs();renderIssues();updateCounts();$('#exportBtn').addEventListener('click',openExport);$('#exportCancel').addEventListener('click',closeExport);$('#exportGo').addEventListener('click',doExport);$('#filterApply').addEventListener('click',()=>{S.filterYear=$('#filterYear').value||null;S.filterMonth=$('#filterMonth').value||null;renderTabs();renderIssues();updateCounts()});$('#filterClear').addEventListener('click',()=>{S.filterYear=null;S.filterMonth=null;$('#filterYear').value='';$('#filterMonth').value='';renderTabs();renderIssues();updateCounts()});$$('.ct-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.ct-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart(btn.dataset.dim)}));const gb=$('#gapBtn');if(gb)gb.addEventListener('click',openGAP);const gc=$('#gapCancel');if(gc)gc.addEventListener('click',closeGAP);const gg=$('#gapGo');if(gg)gg.addEventListener('click',generateGAP);const grc=$('#gapReportClose');if(grc)grc.addEventListener('click',()=>{$('#gapReportModal').classList.remove('open');$('#gapReportModal').setAttribute('aria-hidden','true')})}
+function showReview(){$('#stage-load').classList.remove('active');$('#stage-review').classList.add('active');$('#epigraph').style.display='none';$('#viewToggle').style.display='flex';initDateFilter();renderChart('ws-asset');renderTabs();renderIssues();updateCounts();$('#exportBtn').addEventListener('click',openExport);$('#reloadBtn').addEventListener('click',()=>location.reload());$('#exportCancel').addEventListener('click',closeExport);$('#exportGo').addEventListener('click',doExport);$('#filterApply').addEventListener('click',()=>{S.filterYear=$('#filterYear').value||null;S.filterMonth=$('#filterMonth').value||null;renderTabs();renderIssues();updateCounts()});$('#filterClear').addEventListener('click',()=>{S.filterYear=null;S.filterMonth=null;$('#filterYear').value='';$('#filterMonth').value='';renderTabs();renderIssues();updateCounts()});$$('.ct-btn').forEach(btn=>btn.addEventListener('click',()=>{$$('.ct-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderChart(btn.dataset.dim)}));const gb=$('#gapBtn');if(gb)gb.addEventListener('click',openGAP);const gc=$('#gapCancel');if(gc)gc.addEventListener('click',closeGAP);const gg=$('#gapGo');if(gg)gg.addEventListener('click',generateGAP);const grc=$('#gapReportClose');if(grc)grc.addEventListener('click',()=>{$('#gapReportModal').classList.remove('open');$('#gapReportModal').setAttribute('aria-hidden','true')});
+  $$('#viewToggle .vt-btn').forEach(btn=>btn.addEventListener('click',()=>{const v=btn.dataset.view;if(v==='analysis')switchToAnalysis();else switchToReview()}));
+  setTimeout(()=>{initAnalysis()},200)}
 function renderChart(dim){const area=$('#chartArea');if(!area)return;const ws=S.ws;
+  const issues=getFilteredIssues().filter(isCounted);
   let groups=[];
-  if(dim==='ws-line'){
-    const map={};S.issues.forEach(i=>{const ws_k=String(getMergedVal(ws,'A',i.row)||'(空)'),ln_k=String(getMergedVal(ws,'F',i.row)||'(空)');const k=ws_k+'\x00'+ln_k;if(!map[k])map[k]=0;map[k]++});
-    const byWs={};Object.entries(map).forEach(([k,v])=>{const[ws_k,ln_k]=k.split('\x00');if(!byWs[ws_k])byWs[ws_k]=[];byWs[ws_k].push({sub:ln_k,val:v})});
-    groups=Object.entries(byWs).sort((a,b)=>a[0].localeCompare(b[0])).map(([gk,items])=>({group:gk,items:items.sort((a,b)=>a.sub.localeCompare(b.sub))}));
+  if(dim==='ws-asset'){
+    const map={};
+    for(let r=S.dataStart;r<=S.maxRow;r++){const ws_k=String(getMergedVal(ws,'A',r)||'(空)'),as_k=String(r2s(ws,'I',r)||'(空)');const k=ws_k+'\x00'+as_k;if(!(k in map))map[k]=0}
+    issues.forEach(i=>{const ws_k=String(getMergedVal(ws,'A',i.row)||'(空)'),as_k=String(r2s(ws,'I',i.row)||'(空)');const k=ws_k+'\x00'+as_k;map[k]++});
+    const byWs={};Object.entries(map).forEach(([k,v])=>{const[ws_k,as_k]=k.split('\x00');if(!byWs[ws_k])byWs[ws_k]=[];byWs[ws_k].push({sub:as_k,val:v})});
+    groups=Object.entries(byWs).sort((a,b)=>a[0].localeCompare(b[0])).map(([gk,items])=>({group:gk,items:items.sort((a,b)=>{const am=a.sub.match(/^(\D*)(\d+)/),bm=b.sub.match(/^(\D*)(\d+)/);if(am&&bm&&am[1]===bm[1])return parseInt(am[2])-parseInt(bm[2]);return a.sub.localeCompare(b.sub)})}));
   }else if(dim==='yr-mon'){
-    const map={};S.issues.forEach(i=>{const m=getIssueMonth(i);if(!m)return;const ym=m.match(/^(\d{2})年(\d{2})月$/);if(!ym)return;const yr_k='20'+ym[1]+'年',mo_k=parseInt(ym[2])+'月';const k=yr_k+'\x00'+mo_k;if(!map[k])map[k]=0;map[k]++});
+    const map={};issues.forEach(i=>{const m=getIssueMonth(i);if(!m)return;const ym=m.match(/^(\d{2})年(\d{2})月$/);if(!ym)return;const yr_k='20'+ym[1]+'年',mo_k=parseInt(ym[2])+'月';const k=yr_k+'\x00'+mo_k;if(!map[k])map[k]=0;map[k]++});
     const byYr={};Object.entries(map).forEach(([k,v])=>{const[yr_k,mo_k]=k.split('\x00');if(!byYr[yr_k])byYr[yr_k]=[];byYr[yr_k].push({sub:mo_k,val:v})});
     const allYrs=Object.keys(byYr).sort();const recentYrs=allYrs.slice(-3);
     groups=recentYrs.map(gk=>({group:gk,items:byYr[gk].sort((a,b)=>parseInt(a.sub)-parseInt(b.sub))}));
@@ -222,7 +244,7 @@ function renderChart(dim){const area=$('#chartArea');if(!area)return;const ws=S.
   html+='</div><div class="chart-xaxis"></div>';
   if(groups._extra)html+='<p style="font-size:.78rem;color:var(--ink-faded);margin-top:.4rem;font-family:var(--serif-cn)">'+groups._extra+'</p>';
   area.innerHTML=html}
-function isCounted(i){return i.type!=='month-format'&&!(i.col==='F'&&i.type==='missing')&&!(i.col==='H'&&i.type==='unexpected')}
+function isCounted(i){return i.type!=='month-format'&&!(i.col==='F'&&i.type==='missing')&&!(i.col==='H'&&i.type==='unexpected')&&!(i.col==='G'&&i.type==='dirty')}
 function renderTabs(){const wrap=$('#colTabs');wrap.innerHTML='';const filtered=getFilteredIssues();const byCol={};filtered.forEach(i=>{(byCol[i.col]||(byCol[i.col]=[])).push(i)});S.curCol=null;
   COLS.forEach(col=>{const arr=(byCol[col.L]||[]);const cnt=arr.filter(isCounted).length;if(!cnt)return;const t=document.createElement('div');t.className='col-tab';t.innerHTML='<span class="ct-letter">'+col.L+'</span><span>'+(col.cn||col.L)+'</span><span class="ct-badge">'+cnt+'</span>';t.addEventListener('click',()=>{S.curCol=col.L;renderIssues(col.L);$$('.col-tab').forEach(x=>x.classList.remove('active'));t.classList.add('active')});wrap.appendChild(t)})
   const all=document.createElement('div');all.className='col-tab active';all.style.background='#1a1410';all.style.color='#f3ecdc';all.innerHTML='<span>全</span><span>全部</span><span class="ct-badge" style="background:#b1281e">'+filtered.filter(isCounted).length+'</span>';all.style.order='-1';all.addEventListener('click',()=>{S.curCol=null;renderIssues();$$('.col-tab').forEach(x=>x.classList.remove('active'));all.classList.add('active')});wrap.insertBefore(all,wrap.firstChild)}
@@ -237,9 +259,8 @@ function renderGroup(issues,col){const el=document.createElement('div');el.class
     (hasSug?'<div class="issue-vals"><span class="lbl">原文</span><span class="old-val">'+esc(first.current)+'</span><span class="arrow">→</span><span class="lbl">修订为</span><span class="new-val">'+(first.suggest===''?'null':esc(first.suggest))+'</span>'+(isMulti?'<span class="demo-badge">示例</span>':'')+'</div>'
            :'<div class="issue-vals"><span class="lbl">原文</span><span class="old-val">'+esc(first.current)+'</span>'+(isMulti?'<span class="demo-badge">示例</span>':'')+'</div>')+
     '</div><div class="ig-actions">'+
-    (col.noEdit?'<button class="iact" data-act="ignore" style="min-width:auto"><span>忽略</span></button>'
-      :(isMulti?'<button class="iact bulk-acc" data-act="bulk-accept"'+(hasSug?'':'disabled')+'><span>全部接受</span></button><button class="iact" data-act="yeditor"><span>手动修改</span></button><button class="iact" data-act="ignore"><span>全部忽略</span></button>'
-              :'<button class="iact" data-act="accept"'+(hasSug?'':' disabled')+'><span>接受</span></button><button class="iact" data-act="yeditor"><span>手动修改</span></button><button class="iact" data-act="ignore"><span>忽略</span></button>'))+
+    (col.noEdit?'<button class="iact" data-act="ignore" style="min-width:auto"><span>全部忽略</span></button>'
+      :'<button class="iact bulk-acc" data-act="bulk-accept"'+(hasSug?'':'disabled')+'><span>全部接受</span></button><button class="iact" data-act="yeditor"><span>手动修改</span></button><button class="iact" data-act="ignore"><span>全部忽略</span></button>')+
     '</div>'
   el.querySelectorAll('.iact').forEach(btn=>btn.addEventListener('click',e=>{e.stopPropagation();const act=btn.dataset.act;
     if(act==='yeditor'){renderYEditor(issues.filter(i=>!i.resolved));return}
@@ -248,7 +269,7 @@ function renderGroup(issues,col){const el=document.createElement('div');el.class
     else if(act==='accept'){issues.filter(i=>!i.resolved&&i.suggest!=null).forEach(i=>{i.resolved='accept';i.value=i.suggest})}
 el.classList.add('dismissed');updateCounts()}))
   return el}
-function typeLabel(t){const m={'missing':'数据缺失','unexpected':'多余产品','dirty':'数据格式','whitespace':'空白字符','type':'格式','synonym':'同义词','unknown':'未知','case':'大小写','format':'格式','mismatch':'不一致','numstr':'文本数字','nonnum':'非数字','reverse':'倒序','formula':'公式','negtime':'负值','oaebase':'常数','residual':'残留','timealone':'不配套','dup':'重复','workshop':'车间','date-invalid':'日期无效','month-format':'月份格式','month-mismatch':'月份不符','sl+ul':'SL,UL冲突','sl→cat':'SL不匹配','ul→cat':'UL不匹配','sum≠24':'日和≠24h','nomap':'无映射','main-mismatch':'主类错','sub-mismatch':'次类错'};return m[t]||t}
+function typeLabel(t){const m={'missing':'数据缺失','unexpected':'多余产品','dirty':'数据格式','whitespace':'空白字符','type':'格式','synonym':'同义词','unknown':'未知','case':'大小写','format':'格式','mismatch':'不一致','numstr':'文本数字','nonnum':'非数字','reverse':'倒序','formula':'公式','negtime':'负值','oaebase':'常数','residual':'残留','timealone':'不配套','dup':'重复','workshop':'车间','date-invalid':'日期无效','month-format':'月份格式','month-mismatch':'月份不符','sl+ul':'SL,UL冲突','sl→cat':'SL不匹配','ul→cat':'UL不匹配','sum≠24':'日和≠24h','date-suspect':'日期疑误','nomap':'无映射','main-mismatch':'主类错','sub-mismatch':'次类错'};return m[t]||t}
 function updateCounts(){const ci=S.issues.filter(isCounted);const a=ci.filter(i=>i.resolved==='accept').length,m=ci.filter(i=>i.resolved==='manual').length,ig=ci.filter(i=>i.resolved==='ignore').length
   $('#cntDataRows').textContent=S.maxRow-S.dataStart+1;$('#cntTotal').textContent=ci.length;$('#cntAccept').textContent=a;$('#cntManual').textContent=m;$('#cntIgnore').textContent=ig;$('#cntPending').textContent=ci.length-a-m-ig;$('#exportBtn').style.opacity='1';$('#exportBtn').disabled=false;const gb=$('#gapBtn');if(gb){gb.style.opacity='1';gb.disabled=false}const nm=$('#newName');if(nm)nm.textContent=S.fileName.replace(/\.xlsx?m?$/,'')+'-Check.'+S.srcExt;const om=$('#origName');if(om)om.textContent=S.fileName}
 function openExport(){$('#exportModal').classList.add('open');$('#exportModal').setAttribute('aria-hidden','false')}
@@ -294,7 +315,7 @@ async function exportPatchedFile(){
     zip.file(sheetPath,sheetXml);
     toast('正在压缩打包…');
     const mimeType=S.srcExt==='xlsm'?'application/vnd.ms-excel.sheet.macroEnabled.12':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-    const blob=await zip.generateAsync({type:'blob',mimeType:mimeType});
+    const blob=await zip.generateAsync({type:'blob',mimeType:mimeType,compression:'DEFLATE',compressionOptions:{level:9}});
     const ext=S.srcExt==='xlsm'?'.xlsm':'.xlsx';
     const name=S.fileName.replace(/\.(xlsx|xlsm)$/,'')+'-Check'+ext;
     download(blob,name);
@@ -305,7 +326,7 @@ async function doExport(){closeExport()
   await exportPatchedFile();
   exportCSV();
   toast('已导出修正文件及报告 CSV')}
-function download(blob,name){const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},2000)}
+async function download(blob,name){if(window.__TAURI__&&window.__TAURI__.core&&window.__TAURI__.core.invoke){const buf=new Uint8Array(await blob.arrayBuffer());try{await window.__TAURI__.core.invoke('save_file',{name:name,data:Array.from(buf)});return;}catch(e){console.warn('Tauri save failed, fallback to browser download:',e);}}const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},2000)}
 function exportCSV(bookName){const rows=[['编号','行','列字母','列名','类型','问题描述','原值','订后值','处理方式']];const colMap={};COLS.forEach(c=>colMap[c.L]=c)
   S.issues.forEach(i=>rows.push([i.id,i.row,i.col,colMap[i.col]?colMap[i.col].cn:'',i.type,i.reason,esc(i.current),esc(i.value),i.resolved||'待批']))
   const csv='﻿'+rows.map(r=>r.map(c=>{const s=String(c==null?'':c);if(/[",\n]/.test(s))return'"'+s.replace(/"/g,'""')+'"';return s}).join(',')).join('\r\n')
@@ -432,6 +453,7 @@ async function generateGAP(){
     const timeStamp=formatTimeStamp(new Date());
     let count=0;
     /* setXmlCell: replace cell value in sheet XML while preserving style (s attribute) */
+    var strMap={},allStrs=[],ssOrigCount=0;
     function setXmlCell(xml,addr,val,isNum){
       const re=new RegExp('<c r="'+addr+'"([^>]*)/>|<c r="'+addr+'"([^>]*)>.*?</c>','g');
       const m=re.exec(xml);
@@ -445,11 +467,15 @@ async function generateGAP(){
       }else if(isNum){
         rep='<c r="'+addr+'"'+sAttr+'><v>'+val+'</v></c>';
       }else{
-        rep='<c r="'+addr+'"'+sAttr+' t="inlineStr"><is><t>'+escapeXml(val)+'</t></is></c>';
+        var str=String(val);
+        var idx;
+        if(strMap[str]!=null){idx=strMap[str]}else{idx=ssOrigCount+allStrs.length;strMap[str]=idx;allStrs.push(str)}
+        rep='<c r="'+addr+'"'+sAttr+' t="s"><v>'+idx+'</v></c>';
       }
       return xml.substring(0,m.index)+rep+xml.substring(m.index+m[0].length);
     }
-    function prepareSheetXml(xml,firstDataRow,neededRows){
+    function colToNum(col){var n=0;for(var i=0;i<col.length;i++)n=n*26+(col.charCodeAt(i)-64);return n}
+    function prepareSheetXml(xml,firstDataRow,neededRows,maxCol,rowSpans){
       const sdMatch=xml.match(/<sheetData>([\s\S]*?)<\/sheetData>/);
       if(!sdMatch)return xml;
       const rowRe=/<row\b[^>]*>[\s\S]*?<\/row>|<row\b[^>]*\/>/g;
@@ -461,17 +487,33 @@ async function generateGAP(){
         else if(r===firstDataRow)templateRow=row;
       }
       if(!templateRow)return xml;
+      var maxDataNum=colToNum(maxCol||'H');
+      var spansAttr=rowSpans||'1:186';
       const dataRows=[];
       for(let i=0;i<neededRows;i++){
         const tr=firstDataRow+i;
         let cloned=templateRow.replace(/r="\d+"/,'r="'+tr+'"');
         cloned=cloned.replace(/r="([A-Z]+)\d+"/g,(m,col)=>'r="'+col+tr+'"');
-        cloned=cloned.replace(/<c r="([^"]*)"([^>]*)>[\s\S]*?<\/c>/g,(m,addr,attrs)=>{
+        cloned=cloned.replace(/<c r="([^"]*)"([^>]*)>(?:[\s\S]*?<\/c>)?/g,(m,addr,attrs)=>{
           const sM=attrs.match(/s="(\d+)"/);return'<c r="'+addr+'"'+(sM?' s="'+sM[1]+'"':'')+'/>';
         });
-        cloned=cloned.replace(/<c r="([^"]*)"([^>]*)\/>/g,(m,addr,attrs)=>{
-          const sM=attrs.match(/s="(\d+)"/);return'<c r="'+addr+'"'+(sM?' s="'+sM[1]+'"':'')+'/>';
-        });
+        var cellRe=/<c r="([A-Z]+)\d+"[^>]*\/>/g,cm,lastKeptEnd=0;
+        while((cm=cellRe.exec(cloned))!==null){
+          var cn=colToNum(cm[1]);
+          if(cn<=maxDataNum)lastKeptEnd=cm.index+cm[0].length;
+          else break;
+        }
+        if(lastKeptEnd>0){
+          var rowEnd=cloned.lastIndexOf('</row>');
+          cloned=cloned.substring(0,lastKeptEnd)+cloned.substring(rowEnd);
+        }
+        if(i>0){
+          cloned=cloned.replace(/ customFormat="1"/,'');
+        }
+        cloned=cloned.replace(/spans="\d+:\d+"/,'spans="'+spansAttr+'"');
+        if(!/x14ac:dyDescent=/.test(cloned)){
+          cloned=cloned.replace(/<row r="(\d+)"/,'<row r="$1" x14ac:dyDescent="0.25"');
+        }
         dataRows.push(cloned);
       }
       const lastRow=Math.max(firstDataRow+neededRows-1,firstDataRow);
@@ -487,9 +529,57 @@ async function generateGAP(){
     const tplSheet7=await tplZip.file('xl/worksheets/sheet7.xml').async('string');
     const tplSheet8=await tplZip.file('xl/worksheets/sheet8.xml').async('string');
     const tplSheet9=await tplZip.file('xl/worksheets/sheet9.xml').async('string');
-    const tplStyles=await tplZip.file('xl/styles.xml').async('string');
-    const tplTheme=await tplZip.file('xl/theme/theme1.xml').async('string');
     const tplShared=await tplZip.file('xl/sharedStrings.xml').async('string');
+    /* Parse original sharedStrings entries */
+    var origSiRe=/<si>([\s\S]*?)<\/si>/g,origStrs=[],sM;
+    while((sM=origSiRe.exec(tplShared))!==null){origStrs.push(sM[1])}
+    ssOrigCount=origStrs.length;
+    /* Remap template style indices to correct file style indices using GAP_STYLE_MAP */
+    function remapSheetStyles(xml){
+      return xml.replace(/s="(\d+)"/g,function(m,idx){
+        var ni=GAP_STYLE_MAP[parseInt(idx)];
+        return ni!=null?'s="'+ni+'"':m;
+      }).replace(/style="(\d+)"/g,function(m,idx){
+        var ni=GAP_COL_STYLE_MAP[parseInt(idx)];
+        if(ni!=null)return'style="'+ni+'"';
+        ni=GAP_STYLE_MAP[parseInt(idx)];
+        return ni!=null?'style="'+ni+'"':m;
+      });
+    }
+    /* Build remapping: scan a sheet XML for t="s" indices, remap to new compact indices */
+    function rebuildSharedStrings(sheetXmls){
+      var usedSet=new Set(),idxMap={};
+      sheetXmls.forEach(function(xml){
+        var re=/t="s"><v>(\d+)<\/v>/g,m;
+        while((m=re.exec(xml))!==null){usedSet.add(parseInt(m[1]))}
+      });
+      /* Also include strings set via setXmlCell (already in allStrs with their own indices) */
+      /* Build new sharedStrings: first the used original strings (remapped), then new strings */
+      var newEntries=[],newIdx=0;
+      usedSet.forEach(function(oldIdx){
+        if(oldIdx<origStrs.length){
+          idxMap[oldIdx]=newIdx++;
+          newEntries.push('<si>'+origStrs[oldIdx]+'</si>');
+        }
+      });
+      /* Add new strings from setXmlCell */
+      allStrs.forEach(function(s,i){
+        var origIdx=strMap[s];
+        if(origIdx>=origStrs.length){
+          idxMap[origIdx]=newIdx++;
+          newEntries.push('<si><t>'+escapeXml(s)+'</t></si>');
+        }
+      });
+      /* Remap indices in all sheets */
+      var remapped=sheetXmls.map(function(xml){
+        return xml.replace(/t="s"><v>(\d+)<\/v>/g,function(m,idx){
+          var ni=idxMap[parseInt(idx)];
+          return ni!=null?'t="s"><v>'+ni+'</v>':m;
+        });
+      });
+      var sstXml='<?xml version="1.0" encoding="UTF-8" standalone="yes"?><sst xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" count="'+newIdx+'" uniqueCount="'+newIdx+'">'+newEntries.join('')+'</sst>';
+      return {sheets:remapped,sst:sstXml};
+    }
     const dlZip=new JSZip();
     const total=checked.length;
     for(let ci=0;ci<total;ci++){const assetIdx=checked[ci];
@@ -498,9 +588,10 @@ async function generateGAP(){
       const filename=String(ar[2]||'').trim(),config=String(ar[3]||'');
       if(!filename)continue;
       const batchName=String(ar[4]||'').replace(/_/g,' '),sheetName=String(ar[5]||'Production');
+      strMap={};allStrs=[];
       /* Modify Production sheet XML */
       const numDays=Math.round((endDate-startDate)/86400000)+1;
-      let prodXml=prepareSheetXml(tplSheet5,7,numDays);
+      let prodXml=prepareSheetXml(tplSheet5,7,numDays,'H','1:186');
       prodXml=setXmlCell(prodXml,'B3',filename,false);
       prodXml=setXmlCell(prodXml,'B4',config,false);
       let prodRow=7;
@@ -549,7 +640,7 @@ async function generateGAP(){
         lossEntries.push({prodR:pd.row,nop:true,pd});
       }
       /* Modify Loss Details sheet XML */
-      let lossXml=prepareSheetXml(tplSheet6,2,Math.max(lossEntries.length,1));
+      let lossXml=prepareSheetXml(tplSheet6,2,Math.max(lossEntries.length,1),'R','1:18');
       let lossRow=2;
       for(const entry of lossEntries){
         if(entry.nop){
@@ -587,6 +678,14 @@ async function generateGAP(){
         }
         lossRow++
       }
+      /* Rebuild sharedStrings: minimal set with only used strings, remap indices */
+      var rbResult=rebuildSharedStrings([prodXml,lossXml,tplSheet7,tplSheet8,tplSheet9]);
+      prodXml=rbResult.sheets[0];lossXml=rbResult.sheets[1];
+      var sheet3Xml=rbResult.sheets[2],sheet4Xml=rbResult.sheets[3],sheet5Xml=rbResult.sheets[4];
+      var updatedSS=rbResult.sst;
+      /* Remap style indices from template to correct file's style table */
+      prodXml=remapSheetStyles(prodXml);lossXml=remapSheetStyles(lossXml);
+      sheet3Xml=remapSheetStyles(sheet3Xml);sheet4Xml=remapSheetStyles(sheet4Xml);sheet5Xml=remapSheetStyles(sheet5Xml);
       /* Build new xlsx zip from scratch with only needed files */
       const outZip=new JSZip();
       outZip.file('[Content_Types].xml',
@@ -617,13 +716,22 @@ async function generateGAP(){
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
         '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" '+
         'xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'+
+        '<bookViews><workbookView xWindow="0" yWindow="0" windowWidth="20000" windowHeight="10000" activeTab="0"/></bookViews>'+
         '<sheets>'+
-        '<sheet name="'+escXml(sheetName)+'" sheetId="13" r:id="rId1"/>'+
-        '<sheet name="Loss Details" sheetId="17" r:id="rId2"/>'+
-        '<sheet name="Multi Product PS" sheetId="14" r:id="rId3"/>'+
-        '<sheet name="MEW Data" sheetId="15" r:id="rId4"/>'+
-        '<sheet name="MEW Loss Data" sheetId="16" r:id="rId5"/>'+
-        '</sheets></workbook>');
+        '<sheet name="'+escXml(sheetName)+'" sheetId="1" r:id="rId1"/>'+
+        '<sheet name="Loss Details" sheetId="2" r:id="rId2"/>'+
+        '<sheet name="Multi Product PS" sheetId="3" r:id="rId3"/>'+
+        '<sheet name="MEW Data" sheetId="4" r:id="rId4"/>'+
+        '<sheet name="MEW Loss Data" sheetId="5" r:id="rId5"/>'+
+        '</sheets>'+
+        '<definedNames>'+
+        '<definedName name="_xlnm._FilterDatabase" localSheetId="0" hidden="1">'+"'"+escXml(sheetName)+"'!$A$6:$H$6"+'</definedName>'+
+        '<definedName name="_xlnm._FilterDatabase" localSheetId="1" hidden="1">'+"'Loss Details'!$A$1:$R$1"+'</definedName>'+
+        '<definedName name="_xlnm._FilterDatabase" localSheetId="2" hidden="1">'+"'Multi Product PS'!$A$1:$G$1"+'</definedName>'+
+        '<definedName name="_xlnm._FilterDatabase" localSheetId="3" hidden="1">'+"'MEW Data'!$A$1:$F$1"+'</definedName>'+
+        '<definedName name="_xlnm._FilterDatabase" localSheetId="4" hidden="1">'+"'MEW Loss Data'!$A$1:$I$1"+'</definedName>'+
+        '<definedName name="TemplateVersion" comment="The version number of the template. Do not Change!" hidden="1">"1.2"</definedName>'+
+        '</definedNames></workbook>');
       outZip.file('xl/_rels/workbook.xml.rels',
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
         '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
@@ -638,21 +746,21 @@ async function generateGAP(){
         '</Relationships>');
       outZip.file('xl/worksheets/sheet1.xml',prodXml);
       outZip.file('xl/worksheets/sheet2.xml',lossXml);
-      outZip.file('xl/worksheets/sheet3.xml',tplSheet7);
-      outZip.file('xl/worksheets/sheet4.xml',tplSheet8);
-      outZip.file('xl/worksheets/sheet5.xml',tplSheet9);
-      outZip.file('xl/styles.xml',tplStyles);
-      outZip.file('xl/theme/theme1.xml',tplTheme);
-      outZip.file('xl/sharedStrings.xml',tplShared);
-      outZip.file('docProps/core.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:creator>AE Data Check</dc:creator><cp:lastModifiedBy>AE Data Check</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">'+new Date().toISOString()+'</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">'+new Date().toISOString()+'</dcterms:modified></cp:coreProperties>');
-      outZip.file('docProps/app.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>AE Data Check</Application></Properties>');
+      outZip.file('xl/worksheets/sheet3.xml',sheet3Xml);
+      outZip.file('xl/worksheets/sheet4.xml',sheet4Xml);
+      outZip.file('xl/worksheets/sheet5.xml',sheet5Xml);
+      outZip.file('xl/styles.xml',GAP_STYLES);
+      outZip.file('xl/theme/theme1.xml',GAP_THEME);
+      outZip.file('xl/sharedStrings.xml',updatedSS);
+      outZip.file('docProps/core.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:creator>AE Data Analysis</dc:creator><cp:lastModifiedBy>AE Data Analysis</cp:lastModifiedBy><dcterms:created xsi:type="dcterms:W3CDTF">'+new Date().toISOString()+'</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">'+new Date().toISOString()+'</dcterms:modified></cp:coreProperties>');
+      outZip.file('docProps/app.xml','<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>AE Data Analysis</Application></Properties>');
       toast('正在生成 '+filename+' ('+(ci+1)+'/'+total+')…');
-      const blob=await outZip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      const blob=await outZip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',compression:'DEFLATE',compressionOptions:{level:9}});
       dlZip.file(filename+'_'+timeStamp+'.xlsx',blob);
       count++
     }
     toast('正在打包ZIP文件…');
-    const dlBlob=await dlZip.generateAsync({type:'blob',mimeType:'application/zip'});
+    const dlBlob=await dlZip.generateAsync({type:'blob',mimeType:'application/zip',compression:'DEFLATE',compressionOptions:{level:9}});
     download(dlBlob,'GAP_'+timeStamp+'.zip');
     /* 统计影响GAP文件内容的疑误 */
     const gapCols=new Set(['A','C','H','I','K','N','O','P','Q','X','AA']);

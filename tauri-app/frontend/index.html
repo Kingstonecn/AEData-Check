@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>(function(){if(window.__TAURI__||(window.__TAURI_INTERNALS__)){var z=1.2;function tauriInvoke(cmd,args){if(window.__TAURI__&&window.__TAURI__.core&&window.__TAURI__.core.invoke){window.__TAURI__.core.invoke(cmd,args);return true;}return false;}function applyZoom(retries){retries=retries||0;if(!tauriInvoke('set_zoom',{zoom:z})&&retries<50){setTimeout(function(){applyZoom(retries+1);},100);}}document.addEventListener('DOMContentLoaded',function(){applyZoom(0);});document.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();z=Math.max(0.5,Math.min(3,z*(e.deltaY<0?1.1:0.9)));tauriInvoke('set_zoom',{zoom:z});},{passive:false});}})();</script>
+<title>AE数据分析</title>
+<link rel="stylesheet" href="lib/styles.css">
+</head>
+<body>
+<div class="grain" aria-hidden="true"></div>
+<div class="paper-edge" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="mast-left">
+    <span class="vol date-stamp" id="todayStamp">　</span>
+  </div>
+  <h1 class="title">
+    <span class="title-main">AE&nbsp;数&nbsp;据&nbsp;分&nbsp;析</span>
+    <span class="title-sub">AE Data&nbsp;Analysis</span>
+  </h1>
+  <div class="mast-right"></div>
+  <div class="rule-thick"></div>
+  <div class="rule-thin"></div>
+</header>
+
+<p class="epigraph" id="epigraph">
+  将 Excel 工作簿拖入下方，工具会在浏览器里本地解析并按列逐条列出可疑数据，由你决定每一条是采纳建议、手动填写新值，还是忽略不改。处理完毕后导出修正后的新工作簿，原始公式均完整保留。
+  <span class="cite">— AE数据分析工具</span>
+</p>
+
+<section id="stage-load" class="stage active">
+  <div class="load-wrap">
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="拖入或选择 Excel 文件">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <p class="dz-big">将资产效率Excel文件拖至此处</p>
+      <p class="dz-sub">— 或 —</p>
+      <button class="btn-file" id="pickBtn">选取文件 / Select File</button>
+      <input type="file" id="fileInput" accept=".xlsx,.xlsm" hidden>
+      <p class="dz-foot">本地处理 · 文件不离开本机 · SheetJS 解析</p>
+    </div>
+    <aside class="load-note">
+      <h3>使用说明</h3>
+      <ol>
+        <li>读取 <b>AE Data</b> 主表，以 <b>Asset</b>（设备）、<b>Product</b>（产品）、<b>Category</b>（分类）三表为字典。公式列仅读取不修改。</li>
+        <li>每处问题按列归类列出（含行号、当前值、建议值）。例如：空格/全角空格被清理，<code>"日班"</code>→<code>"白班"</code>，日期序列号→<code>"X月"</code>，产品大小写按字典修正。</li>
+        <li>判定原则：<u>只判值，不替你揣度合理性</u>——如停机行产量为空可能正常，仅标出供你决定。班次时长规则：两班制（白/夜）每班 12h、三班制（含中班）每班 8h，以此核对 OAE 公式常数。</li>
+        <li>每条可 <b>接受</b>、<b>手动修改</b>、<b>忽略</b>。同类型问题可在分组卡片上批量处理。</li>
+        <li><b>导出总表</b>：导出修正后的 Excel 文件（保留公式/格式/宏）及疑误报告 CSV。</li>
+        <li><b>生成GAP文件</b>：选择资产和日期范围，按模板格式批量生成各资产的 GAP 工作簿，打包为 ZIP 下载。</li>
+      </ol>
+    </aside>
+  </div>
+</section>
+
+<div class="view-toggle" id="viewToggle" style="display:none">
+  <button class="vt-btn active" data-view="review">数据检查</button>
+  <button class="vt-btn" data-view="analysis">数据分析</button>
+</div>
+
+<section id="stage-review" class="stage">
+  <div class="ledger-bar">
+    <div class="lb-item"><span class="lb-num" id="cntDataRows">0</span><span class="lb-lbl">数据行数</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num" id="cntTotal">0</span><span class="lb-lbl">疑误总数</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num acc" id="cntAccept">0</span><span class="lb-lbl">自动修正</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num man" id="cntManual">0</span><span class="lb-lbl">手动修改</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num ign" id="cntIgnore">0</span><span class="lb-lbl">已经忽略</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num pen" id="cntPending">0</span><span class="lb-lbl">待审批</span></div>
+    <div class="lb-spacer"></div>
+    <button class="btn-reload" id="reloadBtn">重新载入</button>
+    <button class="btn-export" id="exportBtn" disabled>导出总表</button>
+    <button class="btn-gap" id="gapBtn" disabled>生成GAP文件</button>
+  </div>
+
+  <details class="chart-set" id="chartSet">
+    <summary>疑误分布图表<span class="syn-hint">按维度统计疑误数量</span></summary>
+    <div class="chart-toolbar">
+      <button class="ct-btn active" data-dim="ws-asset">车间 / 资产</button>
+      <button class="ct-btn" data-dim="yr-mon">年 / 月</button>
+    </div>
+    <div class="chart-area" id="chartArea"></div>
+  </details>
+
+  <div class="date-filter" id="dateFilter">
+    <span class="df-label">时间筛选</span>
+    <select id="filterYear" class="df-select"><option value="">全部年份</option></select>
+    <select id="filterMonth" class="df-select"><option value="">全部月份</option></select>
+    <button class="df-apply" id="filterApply">筛选</button>
+    <button class="df-clear" id="filterClear">取消筛选</button>
+  </div>
+
+  <div class="columns-tabs" id="colTabs"></div>
+  <div class="issues-stream" id="issuesStream"></div>
+</section>
+
+<section id="stage-analysis" class="stage">
+  <div class="ledger-bar">
+    <div class="lb-item"><span class="lb-num" id="anaCntRows">0</span><span class="lb-lbl">数据行数</span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num" style="color:#0070c0" id="anaCntOae">0</span><span class="lb-lbl">OAE <span class="lb-pct" style="color:#0070c0" id="anaCntOaePct">0%</span></span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num" style="color:#ffc000" id="anaCntSl">0</span><span class="lb-lbl">SL <span class="lb-pct" style="color:#ffc000" id="anaCntSlPct">0%</span></span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num" style="color:#ff0000" id="anaCntUl">0</span><span class="lb-lbl">UL <span class="lb-pct" style="color:#ff0000" id="anaCntUlPct">0%</span></span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num" style="color:#00b050" id="anaCntBo">0</span><span class="lb-lbl">BO <span class="lb-pct" style="color:#00b050" id="anaCntBoPct">0%</span></span></div>
+    <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num" style="color:#7030a0" id="anaCntVol">0</span><span class="lb-lbl">产量</span></div>
+    <div class="lb-spacer"></div>
+    <button class="btn-reload" id="anaReloadBtn">重新载入</button>
+    <button class="btn-export" id="anaExportBtn">导出报告</button>
+  </div>
+
+  <details class="ana-section" id="anaStack" open>
+    <summary class="ana-section-title">资产效率总览<span class="lock-icon locked" data-lock="anaStack" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="currentColor" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></summary>
+    <div class="ana-section-body">
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">时间粒度</span>
+      <button class="ad-btn" data-stackview="year">年视图</button>
+      <div class="ana-ws-dropdown">
+        <button class="ad-btn active" data-stackview="month">月视图 ▾</button>
+        <div class="ana-dropdown-menu" id="dd-stackrange">
+          <label><input type="radio" name="stackrange" value="all" checked>显示全部</label>
+          <label><input type="radio" name="stackrange" value="12">显示12个月</label>
+        </div>
+      </div>
+      <div class="ana-ws-dropdown">
+        <button class="ad-btn" data-stackview="day">日视图 ▾</button>
+        <div class="ana-dropdown-menu" id="dd-stackrange-day">
+          <label><input type="radio" name="stackrange-day" value="all" checked>显示全部</label>
+          <label><input type="radio" name="stackrange-day" value="365">显示12个月</label>
+          <label><input type="radio" name="stackrange-day" value="180">显示6个月</label>
+          <label><input type="radio" name="stackrange-day" value="90">显示3个月</label>
+          <label><input type="radio" name="stackrange-day" value="30">显示1个月</label>
+        </div>
+      </div>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">显示指标</span>
+      <button class="ad-btn active" data-stackmode="abs">小时数</button>
+      <button class="ad-btn" data-stackmode="pct">百分比</button>
+      <button class="ad-btn" data-stackmode="output">产量</button>
+      <div class="ana-zoom-kpi" id="anaZoomKpi"></div>
+    </div>
+    <div class="ana-dim-toggle" id="stackAssetToggle">
+      <span class="ana-row-label">资产筛选</span>
+      <button class="ad-btn active" data-stackasset-all>全部资产</button>
+      <div class="ana-ws-dropdown">
+        <button class="ad-btn" data-ws="01火法">01火法 ▾</button>
+        <div class="ana-dropdown-menu" id="dd-01火法"></div>
+      </div>
+      <div class="ana-ws-dropdown">
+        <button class="ad-btn" data-ws="02火法">02火法 ▾</button>
+        <div class="ana-dropdown-menu" id="dd-02火法"></div>
+      </div>
+      <div class="ana-ws-dropdown">
+        <button class="ad-btn" data-ws="10车间">10车间 ▾</button>
+        <div class="ana-dropdown-menu" id="dd-10车间"></div>
+      </div>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">资产分面</span>
+      <button class="ad-btn active" data-stackexpand="none">不分面</button>
+      <button class="ad-btn" data-stackexpand="workshop">按车间</button>
+      <button class="ad-btn" data-stackexpand="line">按产线</button>
+      <button class="ad-btn" data-stackexpand="asset">按资产</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">其他选项</span>
+      <button class="ad-btn" id="stackTooltipBtn">工具提示不显示</button>
+    </div>
+    <div id="stackViewChart" style="width:100%;height:380px"></div>
+    <div id="stackFacetContainer" style="display:none"></div>
+    </div>
+  </details>
+
+  <details class="ana-section" id="anaPareto">
+    <summary class="ana-section-title">损失 Pareto 分析<span class="lock-icon" data-lock="anaPareto" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></summary>
+    <div class="ana-section-body">
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">分析维度</span>
+      <button class="ad-btn active" data-pdim="reason">原因</button>
+      <button class="ad-btn" data-pdim="equipment">设备</button>
+      <button class="ad-btn" data-pdim="component">组件</button>
+      <button class="ad-btn" data-pdim="asset">资产</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">时间粒度</span>
+      <button class="ad-btn" data-pview="year">年视图</button>
+      <button class="ad-btn active" data-pview="month">月视图</button>
+      <button class="ad-btn" data-pview="day">日视图</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">显示指标</span>
+      <button class="ad-btn active" data-pmode="abs">小时数</button>
+      <button class="ad-btn" data-pmode="pct">百分比</button>
+      <button class="ad-btn" data-pmode="output">产量</button>
+      <div class="ana-zoom-kpi" id="paretoKpi"></div>
+    </div>
+    <div class="ana-dim-toggle" id="paretoAssetToggle">
+      <span class="ana-row-label">资产筛选</span>
+      <button class="ad-btn active" data-passet-all>全部资产</button>
+      <div class="ana-ws-dropdown">
+        <button class="ad-btn" data-pws="01火法">01火法 ▾</button>
+        <div class="ana-dropdown-menu" id="dd-pareto-01火法"></div>
+      </div>
+      <div class="ana-ws-dropdown">
+        <button class="ad-btn" data-pws="02火法">02火法 ▾</button>
+        <div class="ana-dropdown-menu" id="dd-pareto-02火法"></div>
+      </div>
+      <div class="ana-ws-dropdown">
+        <button class="ad-btn" data-pws="10车间">10车间 ▾</button>
+        <div class="ana-dropdown-menu" id="dd-pareto-10车间"></div>
+      </div>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">分面</span>
+      <button class="ad-btn active" data-pexpand="none">不分面</button>
+      <button class="ad-btn" data-pexpand="workshop">按车间</button>
+      <button class="ad-btn" data-pexpand="asset">按资产</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">其他选项</span>
+      <button class="ad-btn" id="paretoTooltipBtn">工具提示不显示</button>
+    </div>
+    <div id="paretoChart" style="width:100%;height:360px"></div>
+    <div id="paretoFacetContainer" style="display:none"></div>
+    </div>
+  </details>
+
+  <details class="ana-section" id="anaCross">
+    <summary class="ana-section-title">多维度交叉对比<span class="lock-icon" data-lock="anaCross" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></summary>
+    <div class="ana-section-body">
+    <div class="ana-chart-pair">
+      <div>
+        <div class="ana-dim-toggle">
+          <button class="ad-btn active" data-hm="oae">OAE%</button>
+          <button class="ad-btn" data-hm="loss">损失时间</button>
+        </div>
+        <div id="heatmapChart" style="width:100%;height:360px"></div>
+      </div>
+      <div>
+        <div class="ana-dim-toggle">
+          <button class="ad-btn active" data-stack="shift">按班次</button>
+          <button class="ad-btn" data-stack="workshop">按车间</button>
+          <button class="ad-btn" data-stack="line">按产线</button>
+        </div>
+        <div id="stackChart" style="width:100%;height:360px"></div>
+      </div>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">其他选项</span>
+      <button class="ad-btn" id="crossTooltipBtn">工具提示不显示</button>
+    </div>
+    </div>
+  </details>
+</section>
+
+<div class="modal" id="exportModal" aria-hidden="true">
+  <div class="modal-paper">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <h2>导出总表<span class="mp-sub">Export</span></h2>
+    <p class="mp-q">将导出修正后的 Excel 文件及疑误报告 CSV。</p>
+    <div class="mp-actions">
+      <button class="btn-ghost" id="exportCancel">返回</button>
+      <button class="btn-primary" id="exportGo">确认下载</button>
+    </div>
+</div>
+</div>
+
+<div class="modal" id="gapModal" aria-hidden="true">
+  <div class="modal-paper" style="width:min(640px,92vw);max-height:88vh;overflow-y:auto">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <h2>生成GAP文件<span class="mp-sub">GAP Export</span></h2>
+    <div class="gap-date-row">
+      <label>开始日期 <input type="date" id="gapStartDate"></label>
+      <label>结束日期 <input type="date" id="gapEndDate"></label>
+    </div>
+    <p class="mp-q">选择要生成的资产：</p>
+    <div class="gap-asset-list" id="gapAssetList"></div>
+    <div class="mp-actions">
+      <button class="btn-ghost" id="gapCancel">返回</button>
+      <button class="btn-primary" id="gapGo">生成</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="gapReportModal" aria-hidden="true">
+  <div class="modal-paper" style="width:min(560px,92vw);max-height:88vh;overflow-y:auto">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <h2>GAP疑误报告<span class="mp-sub">Issue Report</span></h2>
+    <p class="mp-q" id="gapReportSummary"></p>
+    <div id="gapReportBody" style="margin:.5rem 0 .8rem"></div>
+    <div class="mp-actions">
+      <button class="btn-primary" id="gapReportClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" aria-live="polite"></div>
+
+<footer class="colophon">
+  <span>排版用字 · Noto Serif SC / EB Garamond / JetBrains Mono / Special Elite</span>
+  <span>AE数据分析 · AE Data Analysis · v1.01</span>
+</footer>
+
+<script src="lib/xlsx.full.min.js"></script>
+<script src="lib/jszip.min.js"></script>
+<script src="lib/echarts.min.js"></script>
+<script src="lib/y-editor.js?v=2"></script>
+<script src="lib/analysis.js?v=8"></script>
+<script src="lib/gap_styles.js?v=2"></script>
+<script src="lib/app.js?v=49"></script>
+</body>
+</html>
