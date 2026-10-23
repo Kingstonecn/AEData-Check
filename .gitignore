@@ -1,0 +1,27 @@
+# Build artifacts
+tauri-app/target/
+tauri-app/gen/
+*.exe
+
+# Dependencies
+node_modules/
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Temp
+*.tmp
+temp_*.txt
+
+# Error logs
+ae_error.log
+
+# Data files & smoke tests (not for repo)
+*.xlsx
+_smoke_test*.js

@@ -5,6 +5,15 @@
    =================================================================== */
 'use strict';
 const YEDITOR_ROW_LIMIT=200;
+/* escAA 的 HTML 安全版：空值仍显示 ␣，但先转义 HTML 特殊字符 */
+function escAA2(v){return escXml(v==null||v===''?'␣':String(v));}
+/* 编辑器关闭/保存后同步分组卡片置灰状态 */
+function _syncIssueGroupCards(issues){
+  $$('.issue-group').forEach(function(el){
+    if(el._issues&&el._issues.some(function(gi){return issues.indexOf(gi)>=0;}))
+      el.classList.toggle('dismissed',el._issues.every(function(i){return i.resolved;}));
+  });
+}
 
 function renderYEditor(issues) {
   if (!issues.length) return;
@@ -44,19 +53,22 @@ function renderSimpleEditor(issues,col){
   html+='<div style="display:flex;gap:.6rem;align-items:center;padding:.6rem;margin-bottom:.8rem;background:var(--paper-2);border:1px solid var(--rule-soft);">';
   html+='<span style="font-size:.82rem;color:var(--ink-soft);white-space:nowrap">批量修改为：</span>';
   html+='<input id="batchVal" placeholder="统一改为…" style="font-family:var(--mono);font-size:.82rem;border:1px solid var(--rule-soft);background:#fff;padding:.3rem .5rem;flex:1;min-width:8em;">';
+  html+='<label style="font-size:.78rem;color:var(--ink-soft);white-space:nowrap;cursor:pointer"><input type="checkbox" id="batchClear" style="vertical-align:middle"> 清空</label>';
   html+='<button class="btn-primary" id="batchApply" style="padding:.4rem 1rem;font-size:.82rem">全部应用</button></div>';
   /* 行列表 */
   shown.forEach(function(iss){
     const ctx=rowCtxLite(iss.row);
     html+='<div class="y-editor-row" data-row="'+ctx.r+'" style="display:flex;align-items:center;gap:.6rem;padding:.35rem .5rem;margin-bottom:.3rem;background:var(--paper-2);border:1px solid var(--rule-soft);font-family:var(--mono);font-size:.75rem;">';
     html+='<span style="min-width:3em;color:var(--ink-faded)">#'+ctx.r+'</span>';
-    html+='<span style="min-width:10em;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escAA(ctx.AF)+'</span>';
-    html+='<span style="min-width:7em;color:var(--ink-soft)">'+ctx.C+'</span>';
-    html+='<span style="min-width:5em;color:var(--ink-soft)">'+escAA(ctx.D)+'</span>';
-    html+='<span style="min-width:6em;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escAA(ctx.I)+'</span>';
-    html+='<span style="color:var(--vermillion);min-width:6em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escAA(ctx.cur||'␣')+'</span>';
+    html+='<span style="min-width:10em;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escAA2(ctx.AF)+'</span>';
+    html+='<span style="min-width:7em;color:var(--ink-soft)">'+escXml(ctx.C)+'</span>';
+    html+='<span style="min-width:5em;color:var(--ink-soft)">'+escAA2(ctx.D)+'</span>';
+    html+='<span style="min-width:6em;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escAA2(ctx.I)+'</span>';
+    html+='<span style="color:var(--vermillion);min-width:6em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+escAA2(ctx.cur||'␣')+'</span>';
     html+='<span style="color:var(--ink-faded)">→</span>';
-    html+='<input class="y-simple-input" value="'+escAA(iss.suggest!=null&&iss.suggest!=='␣'&&iss.suggest!=='-'?iss.suggest:ctx.cur)+'" style="width:10em;font-family:var(--mono);font-size:.75rem;border:1px solid var(--blue-soft);background:#fff;padding:.2rem .35rem;">';
+    /* 已处理过的行回显上次保存值，其次建议值，最后原始值 */
+    var initV=iss.resolved==='manual'&&iss.value!=null?String(iss.value):(iss.suggest!=null&&iss.suggest!=='␣'&&iss.suggest!=='-'?String(iss.suggest):ctx.cur);
+    html+='<input class="y-simple-input" data-init="'+escXml(initV)+'" value="'+escXml(initV)+'" style="width:10em;font-family:var(--mono);font-size:.75rem;border:1px solid var(--blue-soft);background:#fff;padding:.2rem .35rem;">';
     html+='<button class="iact y-apply" style="padding:.15rem .4rem;font-size:.72rem;color:var(--ok);border:1px solid var(--ok);background:var(--paper);cursor:pointer;">应用</button>';
     html+='</div>';
   });
@@ -67,6 +79,10 @@ function renderSimpleEditor(issues,col){
   d.innerHTML=html;
   document.body.appendChild(d);
 
+  /* 输入框改动标记：区分本次弹窗中用户真正编辑过的行与未触碰的行 */
+  d.querySelectorAll('.y-simple-input').forEach(function(inp){
+    inp.addEventListener('input',function(){this.dataset.dirty='1';});
+  });
   /* 单行应用 */
   d.querySelectorAll('.y-apply').forEach(function(btn){
     btn.addEventListener('click',function(){
@@ -78,39 +94,43 @@ function renderSimpleEditor(issues,col){
       var iss=issues.find(function(i){return i.row===r;});
       if(!iss)return;
       iss.resolved='manual';iss.value=nv;iss.manualVal=String(nv);
+      S._fixSeq=(S._fixSeq||0)+1;
       rowDiv.style.opacity='.5';
       toast('已应用 #'+r);
     });
   });
-  /* 批量应用 */
+  /* 批量应用；勾选「清空」时将所选单元格置空（与单行输入空值语义一致） */
   d.querySelector('#batchApply').addEventListener('click',function(){
     var inp=d.querySelector('#batchVal');
-    if(!inp.value.trim()){toast('请输入值');return;}
-    var v=inp.value.trim();
-    var nv=v===''?'':(isNaN(Number(v))?v:Number(v));
+    var clear=d.querySelector('#batchClear').checked;
+    if(!clear&&!inp.value.trim()){toast('请输入值或勾选「清空」');return;}
+    var nv=clear?'':(isNaN(Number(inp.value.trim()))?inp.value.trim():Number(inp.value.trim()));
     issues.forEach(function(iss){
-      if(iss.resolved)return;
       iss.resolved='manual';iss.value=nv;iss.manualVal=String(nv);
     });
+    S._fixSeq=(S._fixSeq||0)+1;
     d.querySelectorAll('.y-editor-row').forEach(function(rd){rd.style.opacity='.5';});
     var applied=issues.filter(function(i){return i.resolved==='manual';}).length;
     toast('已批量应用 '+applied+' 条');
   });
   /* 保存 */
-  d.querySelector('#yEditorCancel').onclick=function(){d.remove();};
+  d.querySelector('#yEditorCancel').onclick=function(){_syncIssueGroupCards(issues);updateCounts();d.remove();};
   d.querySelector('#yEditorSave').onclick=function(){
-    /* 未点应用的行：取输入框值自动保存 */
+    /* 未改动且原本已处理(ignore/accept/manual)的行保持原状；未改动且无建议值的未决行不标记 */
     d.querySelectorAll('.y-editor-row').forEach(function(rowDiv){
       var r=parseInt(rowDiv.dataset.row);
       var iss=issues.find(function(i){return i.row===r;});
-      if(!iss||iss.resolved)return;
+      if(!iss)return;
       var inp=rowDiv.querySelector('.y-simple-input');
       var v=inp.value.trim();
+      var edited=inp.dataset.dirty==='1'||v!==(inp.dataset.init||'').trim();
+      var hasSug=iss.suggest!=null&&iss.suggest!=='␣'&&iss.suggest!=='-'&&iss.suggest!=='';
+      if(!edited&&(iss.resolved||!hasSug))return;
       var nv=v===''?'':(isNaN(Number(v))?v:Number(v));
       iss.resolved='manual';iss.value=nv;iss.manualVal=String(nv);
     });
-    var el=document.querySelector('.col-group[data-col="'+col+'"] .issue-group');
-    if(el)el.classList.toggle('dismissed',issues.every(function(i){return i.resolved;}));
+    S._fixSeq=(S._fixSeq||0)+1;
+    _syncIssueGroupCards(issues);
     var saved=issues.filter(function(i){return i.resolved;}).length;
     updateCounts();d.remove();
     toast('已保存 '+saved+' 条');
@@ -169,12 +189,28 @@ function renderYEditorFull(issues) {
   shown.forEach(iss => {
     const ctx = rowCtx(iss.row);
     const r = ctx.r;
+    /* 已处理过的行回显同行已保存的 U/V/W/X/Y/Z/AA，避免只改一个字段或跨 Y/AA 卡片编辑时被原始值覆盖 */
+    (S.issues || []).forEach(function(si) {
+      if (si.row !== r || (si.resolved !== 'manual' && si.resolved !== 'accept')) return;
+      if (si.resolved === 'manual' && si.manualVal) {
+        try {
+          const pf = JSON.parse(si.manualVal);
+          if (pf && typeof pf === 'object') {
+            ['U','V','W','X','Y','Z','AA'].forEach(function(c) { if (pf[c] !== undefined) ctx[c] = pf[c]; });
+            return;
+          }
+        } catch (e) {}
+      }
+      if (si.value != null && si.value !== '␣' && si.value !== '-' && ctx[si.col] !== undefined) {
+        ctx[si.col] = si.value;
+      }
+    });
     function selOpts(opts, cur) {
-      return opts.map(function(o){var isEmpty=o==='(空)';return '<option value="'+(isEmpty?'':escAA(o))+'"'+(isEmpty?(cur===''||cur==null?' selected':''):(o===cur?' selected':''))+'>'+escAA(o)+'</option>';}).join('');
+      return opts.map(function(o){var isEmpty=o==='(空)';return '<option value="'+(isEmpty?'':escAA2(o))+'"'+(isEmpty?(cur===''||cur==null?' selected':''):(o===cur?' selected':''))+'>'+escAA2(o)+'</option>';}).join('');
     }
     html += '<div class="y-editor-row" data-row="'+r+'" style="border:1px solid var(--rule);padding:.45rem;margin-bottom:.45rem;background:var(--paper-2);">';
-    html += '<div class="y-ctx" style="display:flex;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);margin-bottom:.4rem;padding-bottom:.3rem;border-bottom:1px dashed var(--rule-soft);"><span style="min-width:11rem"><b>#'+r+'</b> 车间产线 '+escAA(ctx.AF)+'</span><span style="min-width:11rem">'+cname["C"]+' '+ctx.C+'</span><span style="min-width:11rem">'+cname["D"]+' '+escAA(ctx.DH)+'</span><span style="min-width:18rem">'+cname["I"]+' '+escAA(ctx.I)+'</span><span style="min-width:8rem">'+cname["H"]+' '+escAA(ctx.H)+'</span><span style="min-width:8rem">'+cname["K"]+' '+ctx.K+'</span></div>';
-    html += '<div class="y-ctx2" style="display:flex;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);margin-bottom:.4rem;padding-bottom:.3rem;border-bottom:1px dashed var(--rule-soft);"><span style="min-width:11rem">'+cname["N"]+' '+ctx.N+'</span><span style="min-width:11rem">'+cname["O"]+' '+ctx.O+'</span><span style="min-width:11rem">'+cname["P"]+' '+ctx.P+'</span><span style="min-width:18rem">'+cname["Q"]+' '+escAA(ctx.Q)+'</span><span style="min-width:8rem">'+cname["S"]+' '+escAA(ctx.Sv)+'</span><span style="min-width:8rem">'+cname["T"]+' '+escAA(ctx.Tv)+'</span></div>';
+    html += '<div class="y-ctx" style="display:flex;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);margin-bottom:.4rem;padding-bottom:.3rem;border-bottom:1px dashed var(--rule-soft);"><span style="min-width:11rem"><b>#'+r+'</b> 车间产线 '+escAA2(ctx.AF)+'</span><span style="min-width:11rem">'+cname["C"]+' '+escXml(ctx.C)+'</span><span style="min-width:11rem">'+cname["D"]+' '+escAA2(ctx.DH)+'</span><span style="min-width:18rem">'+cname["I"]+' '+escAA2(ctx.I)+'</span><span style="min-width:8rem">'+cname["H"]+' '+escAA2(ctx.H)+'</span><span style="min-width:8rem">'+cname["K"]+' '+ctx.K+'</span></div>';
+    html += '<div class="y-ctx2" style="display:flex;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);margin-bottom:.4rem;padding-bottom:.3rem;border-bottom:1px dashed var(--rule-soft);"><span style="min-width:11rem">'+cname["N"]+' '+ctx.N+'</span><span style="min-width:11rem">'+cname["O"]+' '+ctx.O+'</span><span style="min-width:11rem">'+cname["P"]+' '+ctx.P+'</span><span style="min-width:18rem">'+cname["Q"]+' '+escAA2(ctx.Q)+'</span><span style="min-width:8rem">'+cname["S"]+' '+escAA2(ctx.Sv)+'</span><span style="min-width:8rem">'+cname["T"]+' '+escAA2(ctx.Tv)+'</span></div>';
     html += '<div class="y-edit-fields" style="display:flex;flex-wrap:wrap;gap:.35rem .7rem;align-items:center;font-family:var(--mono);font-size:.7rem;color:var(--ink-soft);">';
     html += '<span>'+cname["U"]+'</span> <input class="y-num" data-col="U" value="'+ctx.U+'" style="width:56px;">';
     html += '<span>'+cname["V"]+'</span> <input class="y-num" data-col="V" value="'+ctx.V+'" style="width:56px;">';
@@ -183,7 +219,7 @@ function renderYEditorFull(issues) {
     html += '<span style="margin:0 .15rem"></span>';
     html += '<span>'+cname['Y']+'</span> <select class="y-sel y-sel-main" data-col="Y">'+selOpts(mainOpts, ctx.Y)+'</select>';
     html += '<span>'+cname['Z']+'</span> <select class="y-sel y-sel-sub" data-col="Z">'+selOpts(subOpts, ctx.Z)+'</select>';
-    html += '<span>'+cname['AA']+'</span> <select class="y-sel-aa" data-col="AA" style="max-width:220px;"><option value="">(空)</option>'+allAA.map(function(aa){return '<option value="'+escAA(aa)+'"'+(aa===ctx.AA?' selected':'')+'>'+aaLabel(aa)+'</option>';}).join('')+'</select>';
+    html += '<span>'+cname['AA']+'</span> <select class="y-sel-aa" data-col="AA" style="max-width:220px;"><option value="">(空)</option>'+allAA.map(function(aa){return '<option value="'+escAA2(aa)+'"'+(aa===ctx.AA?' selected':'')+'>'+escAA2(aaLabel(aa))+'</option>';}).join('')+'</select>';
     html += '<span class="y-mark" style="font-size:.75rem;color:var(--ink-faded);"></span>';
     html += '</div></div>';
   });
@@ -228,7 +264,7 @@ function renderYEditorFull(issues) {
       });
     });
   });
-  d.querySelector('#yEditorCancel').onclick = () => { d.remove(); };
+  d.querySelector('#yEditorCancel').onclick = () => { _syncIssueGroupCards(issues); updateCounts(); d.remove(); };
   d.querySelector('#yEditorSave').onclick = () => {
     let saved = 0;
     d.querySelectorAll('.y-editor-row').forEach(rowDiv => {
@@ -242,13 +278,22 @@ function renderYEditorFull(issues) {
       rowDiv.querySelectorAll('.y-sel').forEach(sel => fields[sel.dataset.col] = sel.value);
       const aaSel = rowDiv.querySelector('.y-sel-aa');
       fields['AA'] = aaSel ? aaSel.value : '';
+      const mJson = JSON.stringify(fields);
       iss.resolved = 'manual';
-      iss.manualVal = JSON.stringify(fields);
-      iss.value = fields['Y'] || '';
+      iss.manualVal = mJson;
+      iss.value = fields[iss.col] !== undefined ? fields[iss.col] : (fields['Y'] || '');
+      /* 同步同行上其他已处理的 U~AA 疑误，防止旧 accept 在遍历时反向覆盖本次详细编辑结果 */
+      (S.issues || []).forEach(function(si) {
+        if (si !== iss && si.row === r && si.resolved && fields[si.col] !== undefined) {
+          si.resolved = 'manual';
+          si.manualVal = mJson;
+          si.value = fields[si.col];
+        }
+      });
       saved++;
     });
-    const el = document.querySelector('.col-group[data-col="'+issues[0].col+'"] .issue-group');
-    if (el) el.classList.toggle('dismissed', issues.every(i => i.resolved));
+    S._fixSeq=(S._fixSeq||0)+1;
+    _syncIssueGroupCards(issues);
     updateCounts();
     d.remove();
     toast('已应用 ' + saved + ' 条');

@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script>(function(){if(window.__TAURI__||(window.__TAURI_INTERNALS__)){var z=1.2;function tauriInvoke(cmd,args){if(window.__TAURI__&&window.__TAURI__.core&&window.__TAURI__.core.invoke){window.__TAURI__.core.invoke(cmd,args);return true;}return false;}function applyZoom(retries){retries=retries||0;if(!tauriInvoke('set_zoom',{zoom:z})&&retries<50){setTimeout(function(){applyZoom(retries+1);},100);}}document.addEventListener('DOMContentLoaded',function(){applyZoom(0);});document.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();z=Math.max(0.5,Math.min(3,z*(e.deltaY<0?1.1:0.9)));tauriInvoke('set_zoom',{zoom:z});},{passive:false});}})();</script>
+<script>(function(){if(window.__TAURI__||(window.__TAURI_INTERNALS__)){var z=1;function tauriInvoke(cmd,args){if(window.__TAURI__&&window.__TAURI__.core&&window.__TAURI__.core.invoke){window.__TAURI__.core.invoke(cmd,args);return true;}return false;}function applyZoom(retries){retries=retries||0;if(!tauriInvoke('set_zoom',{zoom:z})&&retries<50){setTimeout(function(){applyZoom(retries+1);},100);}}document.addEventListener('DOMContentLoaded',function(){applyZoom(0);});document.addEventListener('wheel',function(e){if(!e.ctrlKey)return;e.preventDefault();z=Math.max(0.5,Math.min(3,z*(e.deltaY<0?1.1:0.9)));tauriInvoke('set_zoom',{zoom:z});},{passive:false});}})();</script>
 <title>AE数据分析</title>
-<link rel="stylesheet" href="lib/styles.css">
+<link rel="stylesheet" href="lib/styles.css?v=4">
 </head>
 <body>
 <div class="grain" aria-hidden="true"></div>
@@ -55,8 +55,8 @@
 </section>
 
 <div class="view-toggle" id="viewToggle" style="display:none">
-  <button class="vt-btn active" data-view="review">数据检查</button>
-  <button class="vt-btn" data-view="analysis">数据分析</button>
+  <button class="vt-btn active" data-view="analysis">数据分析</button>
+  <button class="vt-btn" data-view="review">数据检查</button>
 </div>
 
 <section id="stage-review" class="stage">
@@ -103,6 +103,8 @@
   <div class="ledger-bar">
     <div class="lb-item"><span class="lb-num" id="anaCntRows">0</span><span class="lb-lbl">数据行数</span></div>
     <div class="lb-sep">/</div>
+    <div class="lb-item"><span class="lb-num" id="anaCntDays">0</span><span class="lb-lbl">总天数</span></div>
+    <div class="lb-sep">/</div>
     <div class="lb-item"><span class="lb-num" style="color:#0070c0" id="anaCntOae">0</span><span class="lb-lbl">OAE <span class="lb-pct" style="color:#0070c0" id="anaCntOaePct">0%</span></span></div>
     <div class="lb-sep">/</div>
     <div class="lb-item"><span class="lb-num" style="color:#ffc000" id="anaCntSl">0</span><span class="lb-lbl">SL <span class="lb-pct" style="color:#ffc000" id="anaCntSlPct">0%</span></span></div>
@@ -117,29 +119,30 @@
     <button class="btn-export" id="anaExportBtn">导出报告</button>
   </div>
 
-  <details class="ana-section" id="anaStack" open>
-    <summary class="ana-section-title">资产效率总览<span class="lock-icon locked" data-lock="anaStack" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="currentColor" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></summary>
+  <details class="ana-section" id="anaStack">
+    <summary class="ana-section-title">资产效率总览<span class="lock-icon" data-lock="anaStack" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="sec-download"><button class="sec-dl-btn" data-secdl="stack">导出</button></span></summary>
     <div class="ana-section-body">
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">时间范围</span>
+      <input type="date" id="stackDateStart" class="ana-date-input">
+      <span class="span-select-wrap">
+        <span class="span-lock-icon" id="stackDateSpanLock" title="锁定时长"><svg viewBox="0 0 16 16" width="12" height="12" style="vertical-align:middle;cursor:pointer"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
+        <select id="stackDateSpan" class="ana-date-input span-select-locked">
+          <option value="12">12个月</option>
+          <option value="6">6个月</option>
+          <option value="3">3个月</option>
+          <option value="1">1个月</option>
+        </select>
+      </span>
+      <input type="date" id="stackDateEnd" class="ana-date-input">
+      <button class="ad-btn" id="stackDateClear">全部</button>
+    </div>
     <div class="ana-dim-toggle">
       <span class="ana-row-label">时间粒度</span>
       <button class="ad-btn" data-stackview="year">年视图</button>
-      <div class="ana-ws-dropdown">
-        <button class="ad-btn active" data-stackview="month">月视图 ▾</button>
-        <div class="ana-dropdown-menu" id="dd-stackrange">
-          <label><input type="radio" name="stackrange" value="all" checked>显示全部</label>
-          <label><input type="radio" name="stackrange" value="12">显示12个月</label>
-        </div>
-      </div>
-      <div class="ana-ws-dropdown">
-        <button class="ad-btn" data-stackview="day">日视图 ▾</button>
-        <div class="ana-dropdown-menu" id="dd-stackrange-day">
-          <label><input type="radio" name="stackrange-day" value="all" checked>显示全部</label>
-          <label><input type="radio" name="stackrange-day" value="365">显示12个月</label>
-          <label><input type="radio" name="stackrange-day" value="180">显示6个月</label>
-          <label><input type="radio" name="stackrange-day" value="90">显示3个月</label>
-          <label><input type="radio" name="stackrange-day" value="30">显示1个月</label>
-        </div>
-      </div>
+      <button class="ad-btn active" data-stackview="month">月视图</button>
+      <button class="ad-btn" data-stackview="week">周视图</button>
+      <button class="ad-btn" data-stackview="day">日视图</button>
     </div>
     <div class="ana-dim-toggle">
       <span class="ana-row-label">显示指标</span>
@@ -151,18 +154,6 @@
     <div class="ana-dim-toggle" id="stackAssetToggle">
       <span class="ana-row-label">资产筛选</span>
       <button class="ad-btn active" data-stackasset-all>全部资产</button>
-      <div class="ana-ws-dropdown">
-        <button class="ad-btn" data-ws="01火法">01火法 ▾</button>
-        <div class="ana-dropdown-menu" id="dd-01火法"></div>
-      </div>
-      <div class="ana-ws-dropdown">
-        <button class="ad-btn" data-ws="02火法">02火法 ▾</button>
-        <div class="ana-dropdown-menu" id="dd-02火法"></div>
-      </div>
-      <div class="ana-ws-dropdown">
-        <button class="ad-btn" data-ws="10车间">10车间 ▾</button>
-        <div class="ana-dropdown-menu" id="dd-10车间"></div>
-      </div>
     </div>
     <div class="ana-dim-toggle">
       <span class="ana-row-label">资产分面</span>
@@ -173,6 +164,7 @@
     </div>
     <div class="ana-dim-toggle">
       <span class="ana-row-label">其他选项</span>
+      <button class="ad-btn" id="stackLossOnlyBtn">只显示损失</button>
       <button class="ad-btn" id="stackTooltipBtn">工具提示不显示</button>
     </div>
     <div id="stackViewChart" style="width:100%;height:380px"></div>
@@ -180,49 +172,104 @@
     </div>
   </details>
 
-  <details class="ana-section" id="anaPareto">
-    <summary class="ana-section-title">损失 Pareto 分析<span class="lock-icon" data-lock="anaPareto" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></summary>
+  <details class="ana-section" id="anaAeStack">
+    <summary class="ana-section-title">设备故障总览<span class="lock-icon" data-lock="anaAeStack" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="sec-download"><button class="sec-dl-btn" data-secdl="aestack">导出</button></span></summary>
     <div class="ana-section-body">
     <div class="ana-dim-toggle">
-      <span class="ana-row-label">分析维度</span>
-      <button class="ad-btn active" data-pdim="reason">原因</button>
-      <button class="ad-btn" data-pdim="equipment">设备</button>
-      <button class="ad-btn" data-pdim="component">组件</button>
-      <button class="ad-btn" data-pdim="asset">资产</button>
+      <span class="ana-row-label">时间范围</span>
+      <input type="date" id="aeDateStart" class="ana-date-input">
+      <span class="span-select-wrap">
+        <span class="span-lock-icon" id="aeDateSpanLock" title="锁定时长"><svg viewBox="0 0 16 16" width="12" height="12" style="vertical-align:middle;cursor:pointer"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
+        <select id="aeDateSpan" class="ana-date-input span-select-locked">
+          <option value="12">12个月</option>
+          <option value="6">6个月</option>
+          <option value="3">3个月</option>
+          <option value="1">1个月</option>
+        </select>
+      </span>
+      <input type="date" id="aeDateEnd" class="ana-date-input">
+      <button class="ad-btn" id="aeDateClear">全部</button>
     </div>
     <div class="ana-dim-toggle">
       <span class="ana-row-label">时间粒度</span>
-      <button class="ad-btn" data-pview="year">年视图</button>
-      <button class="ad-btn active" data-pview="month">月视图</button>
-      <button class="ad-btn" data-pview="day">日视图</button>
+      <button class="ad-btn" data-astackview="year">年视图</button>
+      <button class="ad-btn active" data-astackview="month">月视图</button>
+      <button class="ad-btn" data-astackview="week">周视图</button>
+      <button class="ad-btn" data-astackview="day">日视图</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">显示指标</span>
+      <button class="ad-btn active" data-astackmode="abs">小时数</button>
+      <button class="ad-btn" data-astackmode="pct">小时占比</button>
+      <button class="ad-btn" data-astackmode="count">频次</button>
+      <button class="ad-btn" data-astackmode="countpct">频次占比</button>
+      <div class="ana-zoom-kpi" id="aeZoomKpi"></div>
+    </div>
+    <div class="ana-dim-toggle" id="aeAssetToggle">
+      <span class="ana-row-label">资产筛选</span>
+      <button class="ad-btn active" data-aeasset-all>全部资产</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">资产分面</span>
+      <button class="ad-btn active" data-astackexpand="none">不分面</button>
+      <button class="ad-btn" data-astackexpand="workshop">按车间</button>
+      <button class="ad-btn" data-astackexpand="line">按产线</button>
+      <button class="ad-btn" data-astackexpand="asset">按资产</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">选择图例</span>
+      <button class="ad-btn active" data-aelegend="none">无图例</button>
+      <button class="ad-btn" data-aelegend="workshop">车间</button>
+      <button class="ad-btn" data-aelegend="line">车间-产线</button>
+      <button class="ad-btn" data-aelegend="wsAsset">车间-窑炉</button>
+      <button class="ad-btn" data-aelegend="shift">班次</button>
+      <button class="ad-btn" data-aelegend="equipment">故障设备</button>
+      <button class="ad-btn" data-aelegend="mainCat">AE分类</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">其他选项</span>
+      <button class="ad-btn" id="aeTooltipBtn">工具提示不显示</button>
+    </div>
+    <div id="aeViewChart" style="width:100%;height:380px"></div>
+    <div id="aeFacetContainer" style="display:none"></div>
+    </div>
+  </details>
+
+  <details class="ana-section" id="anaPareto">
+    <summary class="ana-section-title">设备故障帕累托分析<span class="lock-icon" data-lock="anaPareto" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="sec-download"><button class="sec-dl-btn" data-secdl="pareto">导出</button></span></summary>
+    <div class="ana-section-body">
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">时间范围</span>
+      <input type="date" id="paretoDateStart" class="ana-date-input">
+      <span class="span-select-wrap">
+        <span class="span-lock-icon" id="paretoDateSpanLock" title="锁定时长"><svg viewBox="0 0 16 16" width="12" height="12" style="vertical-align:middle;cursor:pointer"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span>
+        <select id="paretoDateSpan" class="ana-date-input span-select-locked">
+          <option value="12">12个月</option>
+          <option value="6">6个月</option>
+          <option value="3">3个月</option>
+          <option value="1">1个月</option>
+        </select>
+      </span>
+      <input type="date" id="paretoDateEnd" class="ana-date-input">
+      <button class="ad-btn" id="paretoDateClear">全部</button>
     </div>
     <div class="ana-dim-toggle">
       <span class="ana-row-label">显示指标</span>
       <button class="ad-btn active" data-pmode="abs">小时数</button>
-      <button class="ad-btn" data-pmode="pct">百分比</button>
-      <button class="ad-btn" data-pmode="output">产量</button>
+      <button class="ad-btn" data-pmode="pct">小时占比</button>
+      <button class="ad-btn" data-pmode="count">频次</button>
+      <button class="ad-btn" data-pmode="countpct">频次占比</button>
       <div class="ana-zoom-kpi" id="paretoKpi"></div>
     </div>
     <div class="ana-dim-toggle" id="paretoAssetToggle">
       <span class="ana-row-label">资产筛选</span>
       <button class="ad-btn active" data-passet-all>全部资产</button>
-      <div class="ana-ws-dropdown">
-        <button class="ad-btn" data-pws="01火法">01火法 ▾</button>
-        <div class="ana-dropdown-menu" id="dd-pareto-01火法"></div>
-      </div>
-      <div class="ana-ws-dropdown">
-        <button class="ad-btn" data-pws="02火法">02火法 ▾</button>
-        <div class="ana-dropdown-menu" id="dd-pareto-02火法"></div>
-      </div>
-      <div class="ana-ws-dropdown">
-        <button class="ad-btn" data-pws="10车间">10车间 ▾</button>
-        <div class="ana-dropdown-menu" id="dd-pareto-10车间"></div>
-      </div>
     </div>
     <div class="ana-dim-toggle">
-      <span class="ana-row-label">分面</span>
+      <span class="ana-row-label">资产分面</span>
       <button class="ad-btn active" data-pexpand="none">不分面</button>
       <button class="ad-btn" data-pexpand="workshop">按车间</button>
+      <button class="ad-btn" data-pexpand="line">按产线</button>
       <button class="ad-btn" data-pexpand="asset">按资产</button>
     </div>
     <div class="ana-dim-toggle">
@@ -234,30 +281,31 @@
     </div>
   </details>
 
-  <details class="ana-section" id="anaCross">
-    <summary class="ana-section-title">多维度交叉对比<span class="lock-icon" data-lock="anaCross" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span></summary>
+  <details class="ana-section" id="anaLossCal">
+    <summary class="ana-section-title">AE损失日历<span class="lock-icon" data-lock="anaLossCal" title="点击解锁/锁定"><svg viewBox="0 0 16 16" width="13" height="13"><path class="lock-body" d="M3 7h10v7H3z" fill="none" stroke="currentColor" stroke-width="1.5"/><path class="lock-shackle" d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" stroke-width="1.5"/></svg></span><span class="sec-download"><button class="sec-dl-btn" data-secdl="losscal">导出</button></span></summary>
     <div class="ana-section-body">
-    <div class="ana-chart-pair">
-      <div>
-        <div class="ana-dim-toggle">
-          <button class="ad-btn active" data-hm="oae">OAE%</button>
-          <button class="ad-btn" data-hm="loss">损失时间</button>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">选择资产</span>
+      <div class="lc-cascader" id="lossCalCascader">
+        <div class="lc-cascader-input" id="lossCalCascaderLabel">请选择</div>
+        <div class="lc-cascader-panel" id="lossCalCascaderPanel">
+          <div class="lc-cascader-col" id="lossCalColWs"></div>
+          <div class="lc-cascader-col" id="lossCalColAsset"></div>
         </div>
-        <div id="heatmapChart" style="width:100%;height:360px"></div>
       </div>
-      <div>
-        <div class="ana-dim-toggle">
-          <button class="ad-btn active" data-stack="shift">按班次</button>
-          <button class="ad-btn" data-stack="workshop">按车间</button>
-          <button class="ad-btn" data-stack="line">按产线</button>
-        </div>
-        <div id="stackChart" style="width:100%;height:360px"></div>
-      </div>
+      <button class="ad-btn" data-lcexpand="asset">资产分面</button>
+    </div>
+    <div class="ana-dim-toggle">
+      <span class="ana-row-label">选择月份</span>
+      <button class="ad-btn" id="lossCalPrev">◀</button>
+      <input type="month" id="lossCalMonthInput" class="ana-date-input" style="min-width:120px;text-align:center;font-weight:700">
+      <button class="ad-btn" id="lossCalNext">▶</button>
     </div>
     <div class="ana-dim-toggle">
       <span class="ana-row-label">其他选项</span>
-      <button class="ad-btn" id="crossTooltipBtn">工具提示不显示</button>
+      <button class="ad-btn" id="lossCalTooltipBtn">工具提示不显示</button>
     </div>
+    <div id="lossCalContainer"></div>
     </div>
   </details>
 </section>
@@ -306,6 +354,20 @@
   </div>
 </div>
 
+<div class="modal" id="secDlModal" aria-hidden="true">
+  <div class="modal-paper">
+    <div class="corner tl"></div><div class="corner tr"></div>
+    <div class="corner bl"></div><div class="corner br"></div>
+    <h2 id="secDlTitle">导出<span class="mp-sub">资产效率总览</span></h2>
+    <p class="mp-q">导出格式：</p>
+    <div class="mp-opt"><label><input type="radio" name="secDlFmt" value="excel" checked> <b>Excel</b> <span class="mp-opt-desc">— 含图表图片和数据表</span></label></div>
+    <div class="mp-actions">
+      <button class="btn-primary" id="secDlGo">导出</button>
+      <button class="btn-ghost" id="secDlCancel">返回</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast" aria-live="polite"></div>
 
 <footer class="colophon">
@@ -316,9 +378,9 @@
 <script src="lib/xlsx.full.min.js"></script>
 <script src="lib/jszip.min.js"></script>
 <script src="lib/echarts.min.js"></script>
-<script src="lib/y-editor.js?v=2"></script>
-<script src="lib/analysis.js?v=8"></script>
-<script src="lib/gap_styles.js?v=2"></script>
-<script src="lib/app.js?v=49"></script>
+<script src="lib/exceljs.min.js"></script>
+<script src="lib/y-editor.js?v=7"></script>
+<script src="lib/analysis.js?v=39"></script>
+<script src="lib/app.js?v=60"></script>
 </body>
 </html>
