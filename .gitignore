@@ -24,4 +24,5 @@ ae_error.log
 
 # Data files & smoke tests (not for repo)
 *.xlsx
+*.xlsm
 _smoke_test*.js
